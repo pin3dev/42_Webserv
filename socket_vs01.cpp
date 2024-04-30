@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 11:18:33 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/04/30 14:25:17 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/04/30 15:56:14 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-//VERSÃO COM HTML ESTÁTICO
+/* //VERSÃO COM HTML ESTÁTICO
 int main()
 {
     //[SOCKET]: VARIAVEIS DE CONFIGURAÇÃO DE SOCKET
@@ -70,20 +70,20 @@ int main()
     }
 
 
-    /* TODO: SUBSTITUIR LEITURA DO SOCKET POR STRING
-    std::string buffer;
-    char tmp_buffer[1024];
-    ssize_t bytes_read;
-    while ((bytes_read = read(newsockfd, tmp_buffer, sizeof(tmp_buffer))) > 0)
-    {
-        buffer.append(tmp_buffer, bytes_read);
-    }
+    //TODO: SUBSTITUIR LEITURA DO SOCKET POR STRING
+    //std::string buffer;
+    //char tmp_buffer[1024];
+    //ssize_t bytes_read;
+    //while ((bytes_read = read(newsockfd, tmp_buffer, sizeof(tmp_buffer))) > 0)
+    //{
+        //buffer.append(tmp_buffer, bytes_read);
+    //}
 
-    if (buffer.find("GET / HTTP/1.1") != std::string::npos)
-    {
+    //if (buffer.find("GET / HTTP/1.1") != std::string::npos)
+    //{
         // ...
-    }
-    */
+    //}
+
    
     //[REQUEST]: LEITURA DO SOCKET
     n = read(newsockfd, tmp_buffer, 2048);
@@ -124,14 +124,15 @@ int main()
     close(sockfd);
     //[PROCESS]: FINALIZAR PROGRAMA
     return 0;
-} 
+}  */
 
 
-/* //COM SCRIPT PYTHON
-int main() {
+//COM SCRIPT PYTHON
+int main() 
+{
     int sockfd, newsockfd, portno = 8080;
     socklen_t clilen;
-    char buffer[2048];
+    char tmp_buffer[2048];
     struct sockaddr_in serv_addr, cli_addr;
     int n;
 
@@ -140,6 +141,9 @@ int main() {
         std::cerr << "ERROR opening socket" << std::endl;
         return 1;
     }
+
+    int optval = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
     memset((char *)&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
@@ -160,27 +164,50 @@ int main() {
         return 1;
     }
 
-    n = read(newsockfd, buffer, 2047);
+    n = read(newsockfd, tmp_buffer, 2047);
     if (n < 0) {
         std::cerr << "ERROR reading from socket" << std::endl;
         return 1;
     }
-    buffer[n] = '\0';
+    tmp_buffer[n] = '\0';
 
-    if (strstr(buffer, "GET / HTTP/1.1")) {
-        // Redirecionar a saída do script Python para o socket
-        dup2(newsockfd, STDOUT_FILENO);
+    if (strstr(tmp_buffer, "GET / HTTP/1.1"))
+    {
+        int pipefd[2];
+        pipe(pipefd);
 
-        // Executar o script Python
-        const char *argv[] = { "cgi_vs01.py", NULL };
-        execve("./cgi_vs01.py", const_cast<char **>(argv), NULL);
-        
-        // Se execve() retornar, ocorreu um erro
-        std::cerr << "Failed to execute script" << std::endl;
-        return 1;
+        // Criação de processo filho
+        pid_t pid = fork();
+        if (pid == 0) { // Processo filho
+            // Redireciona a saída padrão para o pipe
+            dup2(pipefd[1], STDOUT_FILENO);
+            close(pipefd[0]);
+            close(pipefd[1]);
+
+            // Execução do script CGI
+            execl("./cgi_vs01.py", "cgi_vs01.py", NULL);
+        } else { // Processo pai
+            // Fecha a extremidade de escrita do pipe
+            close(pipefd[1]);
+            write(newsockfd, "HTTP/1.1 200 OK\nContent-type: text/html\n\n", 41);
+
+            // Leitura da saída do script CGI
+            char buffer[2048];
+            ssize_t bytes_read;
+            while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
+                // Escrever a saída do script CGI no socket
+                write(newsockfd, buffer, bytes_read);
+            }
+            if (bytes_read < 0) {
+                std::cerr << "ERROR reading from pipe" << std::endl;
+                return 1;
+            }
+        }
+        // Espera pelo término do processo filho
+        wait(NULL);
     }
 
     close(newsockfd);
     close(sockfd);
     return 0;
-} */
+}
