@@ -6,11 +6,21 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/16 23:54:08 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/05/17 17:46:00 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Manager.hpp"
+
+/** TODO:
+ * 1. IMPLEMENTAR REPOSICIONAMENTO DE SERVER PARA CONNECT
+ * 2. IMPLEMENTAR TRATAMENTO DE ERRO ESPECIFICO EM CASO DE ERRO NO POLLING
+*/
+/** 
+ * **************************
+ * SECTION - CONSTRUCTORS
+ * **************************
+*/
 
 Manager:: Manager(pollfd &pollfd) : REFpollfd(pollfd), REFserver(NULL) , REFconnect(NULL), 
 HEADpollfd(NULL), HEADserver(NULL), HEADconnect(NULL)
@@ -294,13 +304,13 @@ void Manager::_readRequest()
 	} */
 
 	char	buffer[2048] = {0};
-	int		bytes = recv(this->getSocket(), buffer, 2048, 0);
+	int		bytes = recv(this->getSocket(), buffer, 2048, 0); //VER MAIS SOBRE MASCARAS DE FLAGS
 	write(1, "\n", 1);
 	write(1, buffer, bytes);
 	write(1, "\n", 1);
 	if (bytes > 0)
 		this->getConnect()->appendToRequest(buffer, bytes);
-	else
+	else //ISSO AQUI SO VAI SER EXECUTADO SE DER ERRO NA LEITURA DO REQUEST ou SE A CONEXAO FOR FECHADA PELO CLIENTE
 		this->_closeConnect();
 }
 

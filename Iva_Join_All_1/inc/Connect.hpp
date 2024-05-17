@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:05:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/16 02:27:12 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/05/17 18:07:35 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,33 @@
 
 //CUSTOM INCLUDES
 #include "Server.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
 
 class Connect
 {
 	private:
 		int 		_connect_fd;
-		Server* 	_vServer;
-		std::string	_request;
+		
+		Server* 	_myServer;
+		Request		_myRequest;
+		Response	_myResponse;
 
-		time_t		_updateTimeStamp;
+		time_t		_updated;
 		bool		_ready;
 
 		//UTILS
-		void		_setTimeStamp();
+		void		_setUpdate(time_t now);
 		
 	public:
 		Connect(Server &server, int connect_fd);
 		~Connect();
 
 		void	appendToRequest(char const *buffer, size_t size);
+		void	runRequest();
+
+		//CHECKERS
+		bool	hasExpired() const;
+		bool	isReady() const;
 };
 

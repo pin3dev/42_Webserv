@@ -6,7 +6,7 @@
 #    By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/15 17:50:15 by pin3dev           #+#    #+#              #
-#    Updated: 2024/05/16 02:00:24 by pin3dev          ###   ########.fr        #
+#    Updated: 2024/05/17 18:54:14 by pin3dev          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,8 @@ SRC = exe/main.cpp \
 		exe/Configurator.cpp \
 		exe/Manager.cpp \
 		exe/Connect.cpp \
+		exe/Request.cpp \
+		exe/Response.cpp \
 
 OBJS = ${SRC:.cpp=.o}
 
