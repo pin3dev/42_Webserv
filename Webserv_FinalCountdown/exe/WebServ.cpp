@@ -28,7 +28,7 @@ WebServ::WebServ(std::vector<Server> servers) : _polling(), _vServers(servers), 
 	_countAndCheckVirtualServers();
 	_configVirtualServers();
 	
-	printServerVec(); //TO DEBUG 
+	//printServerVec(); //TO DEBUG 
 	//debugMsg("WebServ Ready!\n\r\n");  //TO DEBUG 
 }
 WebServ::~WebServ()
@@ -51,8 +51,8 @@ void WebServ::_configVirtualServers()
 
 void WebServ::runWebServ()
 {
-	printPollingVec("STARTING"); //TO DEBUG
-	write(1, "HI DO RUNWEBSERV()\n", 20); //TO DEBUG
+	//printPollingVec("STARTING"); //TO DEBUG
+	//write(1, "HI DO RUNWEBSERV()\n", 20); //TO DEBUG
 	while (!gShutDown)
 	{
 		_runPolling();
@@ -63,13 +63,13 @@ void WebServ::runWebServ()
 //** TRANSFORMAR FUNÇÃO EM MULTIPLEXING
 void WebServ::_verifyPolling()
 {
-	write(1, "HI DO VERIFYPOLLING()\n", 23); //TO DEBUG
-	std::cout << "\n\n\tThis VECTOR POLLING size is: " << this->_polling.size() << std::endl; //TO DEBUG
-	std::cout << "\n\n\tThis VECTOR SERVER size is: " << this->_vServers.size() << std::endl; //TO DEBUG
-	std::cout << "\n\n\tThis VECTOR CONNECT size is: " << this->_connects.size() << std::endl; //TO DEBUG
+	//write(1, "HI DO VERIFYPOLLING()\n", 23); //TO DEBUG
+	//std::cout << "\n\n\tThis VECTOR POLLING size is: " << this->_polling.size() << std::endl; //TO DEBUG
+	//std::cout << "\n\n\tThis VECTOR SERVER size is: " << this->_vServers.size() << std::endl; //TO DEBUG
+	//std::cout << "\n\n\tThis VECTOR CONNECT size is: " << this->_connects.size() << std::endl; //TO DEBUG
 	for (size_t i = 0; i < this->_polling.size(); i++)
 	{
-		std::cout << "\n\n\tThis FD POLLING is: " << this->_polling[i].fd << std::endl; //TO DEBUG
+		//std::cout << "\n\n\tThis FD POLLING is: " << this->_polling[i].fd << std::endl; //TO DEBUG
 		Manager manager(this->_polling[i]);
 		manager.setType(_DSAmount, i);
 		manager.setRefs(this->getVecPolling(), this->getVecServers(), this->getVecConnects());
@@ -81,7 +81,7 @@ void WebServ::_cleaningPolling()
 {
 	if ((int)this->_polling.size() == _DSAmount)
 		return;
-	write(1, "HI DO CLEANINGPOLLING()\n", 25);
+	//write(1, "HI DO CLEANINGPOLLING()\n", 25);
     for (std::vector<pollfd>::iterator it = this->_polling.begin(); it != this->_polling.end();)
     {
         if (it->fd == -1)
@@ -93,11 +93,11 @@ void WebServ::_cleaningPolling()
 
 void WebServ::_runPolling()
 {
-	write(1, "HI DO RUNPOLLING()\n", 20);
-	printPollingVec("BEFORE POLL"); //TO DEBUG
+	//write(1, "HI DO RUNPOLLING()\n", 20);
+	//printPollingVec("BEFORE POLL"); //TO DEBUG
 	if (poll(this->_polling.data(), this->_polling.size(), 200) < 0 && this->gShutDown == false)
 		throw std::runtime_error("Polling error!\n");
-	printPollingVec("AFTER POLL"); //TO DEBUG
+	//printPollingVec("AFTER POLL"); //TO DEBUG
 }
 
 /** 

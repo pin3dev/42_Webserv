@@ -22,7 +22,7 @@ std::string const Request::_HTTPunsupported[3] = {"HTTP/0.9\r", "HTTP/1.0\r", "H
  * **************************************
 */
 
-Request::Request() 
+Request::Request() : _readyToResponse(false)
 {
     this->_request.clear();
     this->_url.clear();
@@ -45,6 +45,11 @@ Request::~Request()
 void	Request::toAppend(char const *buffer, size_t size)
 {
     this->_request.append(buffer, size);
+    
+    std::string partRequest = buffer;
+
+    if (partRequest.find("\r\n"))
+        this->_readyToResponse = true; 
 }
 
 
@@ -179,6 +184,9 @@ std::string Request::getPayload() const {return (this->_payload);}
 size_t  Request::getBodyLength() const {return (this->_bodyLength);}
 size_t Request::getMaxLength() const {return (this->_maxLength);}
 std::map<std::string, std::string> Request::getHeadData() const {return (this->_headerData);}
+
+
+bool	Request::getFlagToResponse() const{return (this->_readyToResponse);}
 
 void   Request::setMaxLength(size_t length){this->_maxLength = length;}
 

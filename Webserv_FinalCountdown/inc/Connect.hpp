@@ -32,7 +32,6 @@ class Connect
 		Response	_myResponse;
 
 		time_t		_updated;
-		bool		_readyToResponse;
 
 		//UTILS
 		void	_setUpdate(time_t now);

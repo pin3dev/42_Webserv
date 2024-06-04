@@ -19,9 +19,9 @@
  * **************************************
 */
 
-Connect:: Connect(Server &server, int connect_fd) : _connect_fd(connect_fd), _myServer(&server), _readyToResponse(false)
+Connect:: Connect(Server &server, int connect_fd) : _connect_fd(connect_fd), _myServer(&server)
 {
-    //this->_setUpdate(_nowTime());
+    //this->_setUpdate(Utils::_nowTime());
     this->_myRequest.setMaxLength(_myServer->getClientMaxBodySize()); //**CONFIGURADO NO CONSTRUCTOR DE CONNECT
 	this->_myResponse.setServLoc(_myServer->getLocations()); //**CONFIGURADO NO CONSTRUCTOR DE CONNECT
 	this->_myResponse.setConnectFd(this->getConnectFd()); //**CONFIGURADO NO CONSTRUCTOR DE CONNECT
@@ -42,7 +42,6 @@ Connect::~Connect()
 void	Connect::appendToRequest(char const *buffer, size_t size)
 {
     //this->_setUpdate(Utils::_nowTime()); 
-    //this->_readyToResponse = false; //**
 	this->_myRequest.toAppend(buffer, size); 
 }
 
@@ -53,15 +52,15 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 	try
 	{
 		//TESTE DE ERRO - SEGFAULT
-		(void)VecServers;
+/* 		(void)VecServers;
 		std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 30\n\nHello World! TO: " + this->getServer().getPort();
 		std::cout << "SENDING RESPONSE" << std::endl;
-		write(this->getConnectFd(), response.c_str(), response.length());
-/* 		this->_myRequest.checkStatusRequest();
+		write(this->getConnectFd(), response.c_str(), response.length()); */
+		this->_myRequest.checkStatusRequest();
 		this->_searchForNonDefaultServer(VecServers);
 		std::string url = this->getRequest().getURL();
 		std::string method = this->getRequest().getMethod();
-		this->_myResponse.processRequest(url, method, this->getServer().getRoot()); */
+		this->_myResponse.processRequest(url, method, this->getServer().getRoot()); 
 	}
 	catch(const std::exception& e)
 	{
@@ -85,7 +84,6 @@ Request	&Connect::getRequest(){return (this->_myRequest);}
 Response &Connect::getResponse(){return (this->_myResponse);}
 Server	&Connect::getServer(){return (*this->_myServer);}
 time_t	Connect::getLastUpdated() const{return (this->_updated);}
-bool	Connect::getFlagToResponse() const{return (this->_readyToResponse);}
 
 void	Connect::resetServer(Server *server)
 {

@@ -40,6 +40,7 @@ class Request
 		std::string	_payload;
 		size_t		_bodyLength;
         size_t      _maxLength; //**CONFIGURADO NO CONSTRUCTOR DE CONNECT
+        bool		_readyToResponse;
 		std::map<std::string, std::string>	_headerData;
         
         void    _setMethodAndURL(std::stringstream &ss);
@@ -66,6 +67,8 @@ class Request
         size_t  getBodyLength() const;
         size_t  getMaxLength() const;
         std::map<std::string, std::string> getHeadData() const;
+        bool	getFlagToResponse() const;
+
 
         void    setMaxLength(size_t length);
 };

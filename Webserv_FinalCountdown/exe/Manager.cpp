@@ -22,7 +22,7 @@
 Manager:: Manager(pollfd &pollfd) : REFpollfd(pollfd), REFserver(NULL) , REFconnect(NULL), 
 HEADpollfd(NULL), HEADserver(NULL), HEADconnect(NULL)
 {
-	write(1, "\tHI DO CONSTRUCTORMANAGER()\n", 29); //TO DEBUG
+	//write(1, "\tHI DO CONSTRUCTORMANAGER()\n", 29); //TO DEBUG
 	this->_type = "";
 	this->_IDpseudo = 0;
 	this->IDconnect = 0;
@@ -50,11 +50,11 @@ Manager::~Manager()
 
 void Manager::setType(int DSAmount, int IDpollfd)
 {
-	write(1, "\tHI DO SETTYPE()\n", 18); //TO DEBUG
-	std::cout << "_DSAmount: " << DSAmount << std::endl; //TO DEBUG
-	std::cout << "IDpollfd: " << IDpollfd << std::endl; //TO DEBUG
+	//write(1, "\tHI DO SETTYPE()\n", 18); //TO DEBUG
+	//std::cout << "_DSAmount: " << DSAmount << std::endl; //TO DEBUG
+	//std::cout << "IDpollfd: " << IDpollfd << std::endl; //TO DEBUG
     this->_IDpseudo = IDpollfd - DSAmount;
-	std::cout << "IDpseudo: " << this->_IDpseudo << std::endl; //TO DEBUG
+	//std::cout << "IDpseudo: " << this->_IDpseudo << std::endl; //TO DEBUG
     if (this->_IDpseudo < 0)
 		this->_type = "SERVER";
 	else
@@ -92,7 +92,7 @@ void Manager::_setServerAddr(std::vector<Server>& servers)
 
 void Manager::_setConnectAddr(std::vector<Server>& servers, std::vector<Connect>& connect)
 {
-	write(1, "\tHI DO SETCONNECTADDR()\n", 25); //TO DEBUG
+	//write(1, "\tHI DO SETCONNECTADDR()\n", 25); //TO DEBUG
 	this->REFserver = &servers[0];
 	this->REFconnect = &connect[this->_IDpseudo];
 	this->IDconnect = this->_IDpseudo;
@@ -100,7 +100,7 @@ void Manager::_setConnectAddr(std::vector<Server>& servers, std::vector<Connect>
 
 void Manager::_setPollfdOfConnect(int connectSocket)
 {
-	write(1, "\tHI DO SETPOLLOFCONNECT()\n", 27); //TO DEBUG
+	//write(1, "\tHI DO SETPOLLOFCONNECT()\n", 27); //TO DEBUG
 	pollfd newPoll = {0, 0, 0};
 	newPoll.fd = connectSocket;
 	newPoll.revents = 0;
@@ -110,17 +110,17 @@ void Manager::_setPollfdOfConnect(int connectSocket)
 }
 void Manager::_setNewConnect(int connectSocket)
 {
-	write(1, "\tHI DO SETNEWCONNECT()\n ", 25); //TO DEBUG
+	//write(1, "\tHI DO SETNEWCONNECT()\n ", 25); //TO DEBUG
 	this->HEADconnect->push_back(Connect(*this->REFserver, connectSocket));
 }
 void Manager::_rmPollfdOfConnect()
 {
-	write(1, "\tHI DO RMPOLLOFCONNECT()\n", 26); //TO DEBUG
+	//write(1, "\tHI DO RMPOLLOFCONNECT()\n", 26); //TO DEBUG
 	this->REFpollfd.fd = -1;
 }
 void Manager::_rmConnect() 
 {
-	write(1, "\tHI DO RMCONNECT()\n", 20); //TO DEBUG //**tinha mudado esse ID
+	//write(1, "\tHI DO RMCONNECT()\n", 20); //TO DEBUG //**tinha mudado esse ID
 	std::cout << "IDconnect: " << this->getID_C() << std::endl; //TO DEBUG
     if (this->getID_C() >= 0 && this->getID_C() < (int)this->HEADconnect->size())
        this->HEADconnect->erase(this->HEADconnect->begin() + this->IDconnect);
@@ -136,9 +136,10 @@ void Manager::_rmConnect()
 
 void  Manager::runManager()
 {
-	write(1, "\n\tHI DO RUNMANAGER()\n", 21); //TO DEBUG
+	//write(1, "\n\tHI DO RUNMANAGER()\n", 21); //TO DEBUG
 	if (this->getPollMode() & POLLIN)
 	{
+		//std::cout << "entrei pollin" << std::endl;
 		if (this->getType() == "SERVER")
 			this->_createConnect();
 		else if (this->getType() == "CONNECTION")
@@ -146,16 +147,20 @@ void  Manager::runManager()
 	}
 	if (this->getPollMode() & POLLOUT)
 	{
+		//std::cout << "entrei pollout" << std::endl;
 		if (this->getType() == "CONNECTION")
 			this->_askToresponse();
 	}
 	if (this->getPollMode() & (POLLERR | POLLHUP | POLLNVAL))
+	{
+		//std::cout << "entrei erro" << std::endl;
 		_closeConnect(); //**ADICIONAR UM TRATAMENTO DE ERRO ESPECIFICO QUE DEPOIS CHAME POR CLOSECONNECT
+	}
 }
 
 void Manager::_createConnect()
 {
-	write(1, "\tHI DO CREATECONNECT()\n", 24); //TO DEBUG
+	//write(1, "\tHI DO CREATECONNECT()\n", 24); //TO DEBUG
 	int newConnect_fd = accept(this->REFserver->getSocket(), NULL, NULL);
 	if (newConnect_fd < 0)
 		throw std::runtime_error("Error: accept() failed\n");
@@ -168,7 +173,7 @@ void Manager::_createConnect()
 
 void Manager::_closeConnect()
 {
-	write(1, "\tHI DO CLOSECONNECT()\n", 23); //TO DEBUG
+	//write(1, "\tHI DO CLOSECONNECT()\n", 23); //TO DEBUG
 	
 	close(this->getPollSocket());
 
@@ -180,15 +185,15 @@ void Manager::_closeConnect()
 //**TALVEZ SEJA AQUI A INTEGRAÇÃO DO EOF PARA CHUNKS
 void Manager::_storeRequest()
 {
-	write(1, "\tHI DO STOREREQUEST()\n", 22); //TO DEBUG
+	//write(1, "\tHI DO STOREREQUEST()\n", 22); //TO DEBUG
 
 	char	buffer[2048] = {0};
 	int		bytes = recv(this->getPollSocket(), buffer, 2048, 0); //VER MAIS SOBRE MASCARAS DE FLAGS
 	
-	write(1, "\n", 1); //TO DEBUG
-	write(1, buffer, bytes); //TO DEBUG
+	//write(1, "\n", 1); //TO DEBUG
+	//write(1, buffer, bytes); //TO DEBUG
 	//print_invisible(buffer); //TO DEBUG
-	write(1, "\n", 1); //TO DEBUG
+	//write(1, "\n", 1); //TO DEBUG
 	
 	if (bytes > 0)
 		this->REFconnect->appendToRequest(buffer, bytes);
@@ -199,13 +204,16 @@ void Manager::_storeRequest()
 //**TALVEZ SEJA AQUI A INTEGRAÇÃO DO EOF PARA CHUNKS
 void Manager::_askToresponse()
 {
-	write(1, "\tHI DO ASKTORESPONSE()\n", 19); //TO DEBUG
+	//write(1, "\tHI DO ASKTORESPONSE()\n", 19); //TO DEBUG
 
 	//**VERIFICAR SE A CONEXÃO NÃO ESTÁ EM TIMEOUT isTimeout(), SE SIM FECHA E RETORNA
 	//**VERIFICAR SE A CONEXÃO ESTÁ PRONTA PARA ENVIAR RESPOSTA isReadyToSend(), SE NÃO RETORNA
 	//**VEFICAR O SERVIDOR NON DEFAULT
-	this->REFconnect->runRequest(*this->HEADserver);
-	this->_closeConnect();
+	if (this->REFconnect->getRequest().getFlagToResponse())
+	{
+		this->REFconnect->runRequest(*this->HEADserver);
+		this->_closeConnect();
+	}
 }
 
 
