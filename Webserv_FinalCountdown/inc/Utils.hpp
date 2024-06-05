@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 15:11:42 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/28 11:50:37 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 15:50:09 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <string>
 #include <ctime>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <sys/stat.h>
 #include <dirent.h> //to dir
@@ -43,6 +44,11 @@ class Utils
         static bool fileExists(std::string const &fullpath);
         static bool directoryExists(std::string const &fullpath);
         static void print_invisibles(const std::string& text);
+
+        static std::string generateResponseOK(std::string const &path);
+        static std::string getFileContent(std::string const &path);
+        static std::string getFileType(std::string const &file);
+
 
 
 };

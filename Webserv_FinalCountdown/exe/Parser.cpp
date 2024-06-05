@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:36:03 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/15 19:36:23 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 21:24:42 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ std::pair<std::string, location_t> Parser::getLocationPair(char& currentChar)
     location_t locationStructure;
 
     locationValue = this->settings["location"];
+    Utils::_trim(locationValue, " \t\r\v\f");
     this->settings.erase("location");
     locationSettings = extractLocationSettings(currentChar);
     locationStructure = fillLocationStructure(locationSettings);

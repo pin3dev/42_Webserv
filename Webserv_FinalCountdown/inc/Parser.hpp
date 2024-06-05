@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:36:39 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/28 10:44:08 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 21:25:12 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <map>
 #include "Server.hpp"
 #include "Location.hpp"
+#include "Utils.hpp"
 
 class Parser
 {

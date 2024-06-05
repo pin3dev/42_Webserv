@@ -6,11 +6,12 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/03 21:26:23 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 19:50:12 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Connect.hpp"
+#include "Utils.hpp"
 
 
 /** 
@@ -33,6 +34,58 @@ Connect::~Connect()
 	//std::cout << "Connect destroyed" << std::endl;
 }
 
+
+std::string getFileType(std::string const &file)
+{
+	std::map<std::string, std::string> types;
+
+	types["txt"] = "text/plain";
+	types["html"] = "text/html";
+	types["css"] = "text/css";
+
+	types["js"] = "application/javascript";
+	types["py"] = "application/python";
+
+	types["jpg"] = "image/jpg";
+	types["jpeg"] = "image/jpeg";
+	types["png"] = "image/png";
+	types["gif"] = "image/gif";
+
+	if (file.find_last_of(".") != std::string::npos)
+	{
+		std::string extension = file.substr(file.find_last_of(".") + 1);
+		if (types.find(extension) != types.end())
+			return (types[extension]);
+	}
+	return ("text/plain");
+}
+std::string getFileContent(std::string const &path)
+{
+	std::string content;
+	std::ifstream file(path.c_str(), std::ios::binary | std::ios::in);
+
+	content.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	file.close();
+	return (content);
+}
+
+std::string autoHTML(std::string const &status, std::string const &statusDescrip, std::string const &fullPath)
+{
+	std::string fileContent = Utils::getFileContent(fullPath);
+	int sizeFileContent = fileContent.length();
+	
+	std::string response = 
+		"HTTP/1.1 " + status + " " + statusDescrip + "\n"
+		"Date: " + Utils::_getTimeStamp("%a, %d %b %Y %H:%M:%S GMT") + "\n" +
+		"Server: Webserv/1.0.0 (Linux)\n" +
+		"Connection: keep-alive\n" +
+		"Content-Type: " + Utils::getFileType(fullPath) + "; charset=utf-8\n" +
+		"Content-Length: " + Utils::_itoa(sizeFileContent) + "\n\n";
+
+	return (response + fileContent);
+}
+
+
 /** 
  * **************************
  * SECTION - PUBLIC METHODS
@@ -51,12 +104,8 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
     //this->_setUpdate(_nowTime()); 
 	try
 	{
-		//TESTE DE ERRO - SEGFAULT
-/* 		(void)VecServers;
-		std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 30\n\nHello World! TO: " + this->getServer().getPort();
-		std::cout << "SENDING RESPONSE" << std::endl;
-		write(this->getConnectFd(), response.c_str(), response.length()); */
 		this->_myRequest.checkStatusRequest();
+		this->_myResponse.setHeaderData(this->_myRequest.getHeadData());
 		this->_searchForNonDefaultServer(VecServers);
 		std::string url = this->getRequest().getURL();
 		std::string method = this->getRequest().getMethod();
@@ -64,8 +113,13 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 	}
 	catch(const std::exception& e)
 	{
-		std::cout << "\n\tERROR DESCOMUNAL AQUI: " << e.what() << std::endl;
-		//this->_myResponse.setStatus(e.what()); //**
+		//std::cout << "\n\tERROR DESCOMUNAL AQUI: " << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
+		std::string ErrorResponse;
+		ErrorResponse = autoHTML("404", "Error", "www/site1/404.html");//**TEMPORARIO
+		write(this->_connect_fd, ErrorResponse.c_str(), ErrorResponse.size());
+		//this->_myResponse.errorHTML(e.what()); //**MUDAR PARA UMA FUNCAO AUTOMATICA
+		//**ACHO QUE TENHO QUE FECHAR A CONEX'AO AQUI
 	}
 
 /* 	this->_request.clear(); //
@@ -99,10 +153,10 @@ void	Connect::_setUpdate(time_t now){this->_updated = now;}
  * **************************
 */
 
-bool	Connect::hasExpired() const
+/* bool	Connect::hasExpired() const
 {
-	return ((Utils::_nowTime() - this->_updated) > 60); //**
-}
+	return ((Utils::_nowTime() - this->_updated) > 60); 
+} */
 
 //**RESOLVER ESSE MÉTODO COM FLAGS MELHORES
 /* bool	Connect::isReady() const

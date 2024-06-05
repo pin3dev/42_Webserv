@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:10:47 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/28 11:27:24 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 21:48:24 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,67 +19,39 @@
  * **************************************
  */
 
-Response::Response() : _urlLoopCount(0), _connect_fd(0),  _servLoc()
+Response::Response() : _urlLoopCount(0), _connect_fd(0),  _servLoc(), _headerData()
 {}
 
 Response::~Response()
 {}
 
 /** 
- * **************************************
- * SECTION - UTILS CHAT
- * **************************************
+ * *********************
+ * SECTION - UTILS 
+ * *********************
  */
-
-
-std::string getFileType(std::string const &file)
+//**ver esse Server: name
+/* std::string autoHTML(std::string const &status, std::string const &statusDescrip, std::string const &fullPath)
 {
-	std::map<std::string, std::string> types;
-
-	types["txt"] = "text/plain";
-	types["html"] = "text/html";
-	types["css"] = "text/css";
-
-	types["js"] = "application/javascript";
-	types["py"] = "application/python";
-
-	types["jpg"] = "image/jpg";
-	types["jpeg"] = "image/jpeg";
-	types["png"] = "image/png";
-	types["gif"] = "image/gif";
-
-	if (file.find_last_of(".") != std::string::npos)
-	{
-		std::string extension = file.substr(file.find_last_of(".") + 1);
-		if (types.find(extension) != types.end())
-			return (types[extension]);
-	}
-	return ("text/plain");
-}
-
-std::string getFileContent(std::string const &path)
-{
-	std::string content;
-	std::ifstream file(path.c_str(), std::ios::binary | std::ios::in);
-
-	content.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	file.close();
-	return (content);
-}
-
-std::string generateResponseOK(std::string const &path)
-{
+	std::string fileContent = getFileContent(fullPath);
+	int sizeFileContent = fileContent.length();
+	
 	std::string response = 
-		"HTTP/1.1 200 OK\n"
+		"HTTP/1.1 " << status << " " << statusDescrip << "\n"
 		"Date: " + Utils::_getTimeStamp("%a, %d %b %Y %H:%M:%S GMT") + "\n" +
 		"Server: Webserv/1.0.0 (Linux)\n" +
 		"Connection: keep-alive\n" +
 		"Content-Type: " + getFileType(path) + "; charset=utf-8\n" +
-		"Content-Length: " + Utils::_itoa(getFileContent(path).length()) + "\n\n";
+		"Content-Length: " + Utils::_itoa(sizeFileContent) + "\n\n";
 
-	return (response + getFileContent(path));
-}
+	return (response + fileContent);
+} */
 
+
+/* void _setEnvToCGI()
+{
+	setenv("CONTENT_TYPE", )
+} */
 
 void serveFile(const std::string &fullPath, int _connectSocket)
 {
@@ -94,14 +66,15 @@ void serveFile(const std::string &fullPath, int _connectSocket)
 	}
 	file.close();
 
-	std::string response = generateResponseOK(fullPath);
+	/* autoHTML("200", "OK", fullPath); */
+	std::string response = Utils::generateResponseOK(fullPath);
 	write(_connectSocket, response.c_str(), response.length()); 
 }
 
-void serveError(int code, const std::string &message) {
+/* void serveError(int code, const std::string &message) {
     std::cout << "Error " << code << ": " << message << std::endl;
 }
-
+ */
 bool isMethodAllowed(const std::vector<std::string> &methods, const std::string &method) {
     bool isAllowed = std::find(methods.begin(), methods.end(), method) != methods.end();
     if (isAllowed)
@@ -156,7 +129,6 @@ bool serveTryFile(const std::string &tryFilePath, int _connectSocket)
  * **************************************
  */
 
-
 void    Response::setConnectFd(int connectSocket){this->_connect_fd = connectSocket;}
 int     Response::getConnectFd(){return (this->_connect_fd);}
 void    Response::setServLoc(std::map<std::string, location_t> const &servLoc)
@@ -168,6 +140,15 @@ void    Response::setServLoc(std::map<std::string, location_t> const &servLoc)
 		this->_servLoc.insert(std::make_pair(origMap->first, origMap->second));
 	}
 }
+void	Response::setHeaderData(std::map<std::string, std::string> const &headerData)
+{
+	this->_headerData.clear();
+	std::map<std::string, std::string>::const_iterator origMap = headerData.begin();
+	for (; origMap != headerData.end(); origMap++)
+	{
+		this->_headerData.insert(std::make_pair(origMap->first, origMap->second));
+	}
+}
 /** 
  * **************************************
  * SECTION - RESPONSE
@@ -175,21 +156,21 @@ void    Response::setServLoc(std::map<std::string, location_t> const &servLoc)
  */
 
 
-bool	Response::_isRightLocation(std::map<std::string, location_t>::const_iterator &curLoc, std::string &url)
+bool	Response::_isRightLocation(std::string locName, std::string &url)
 {
-	if (curLoc->first == url)
+	if (locName == url)
 	{
-		std::cout << curLoc->first << " é igual a " << url << std::endl;
+		std::cout << locName << " é igual a " << url << std::endl;
 		return true;
 	}
-	if (Utils::isParentDirOf(curLoc->first, url))
+	if (Utils::isParentDirOf(locName, url))
 	{
-		std::cout << curLoc->first << " é pai de " << url << std::endl;
+		std::cout << locName << " é pai de " << url << std::endl;
 		return true;
 	}
-	if (Utils::isExtensionOf(curLoc->first, url))
+	if (Utils::isExtensionOf(locName, url))
 	{
-		std::cout << curLoc->first << " é extensão de " << url << std::endl;
+		std::cout << locName << " é extensão de " << url << std::endl;
 		return true;
 	}
 	return false;
@@ -213,34 +194,52 @@ bool 	Response::_isMethodAllowed(std::vector<std::string> const &methods, std::s
  * **************************************
  */
 
+void	printMap(std::map<std::string, location_t> const &servLoc)
+{
+	std::map<std::string, location_t>::const_iterator it = servLoc.begin();
+	for (; it != servLoc.end(); it++)
+	{
+		std::cout << "KEY: " << it->first << std::endl;
+	}
+}
 
 
 // Função principal para processar a requisição
 void Response::processRequest(const std::string &url, const std::string &method, const std::string &root)
 {
 	this->_urlLoopCount++;
+	//printMap(this->_servLoc);
     std::string effectiveRoot = root; 
-    std::string effectiveUrl = url; //**
+    std::string effectiveUrl = url;
+	std::string effectiveCgiPath;
+	std::string fullPath;
 	std::map<std::string, location_t>::const_iterator rightLocation = this->_servLoc.end();
     std::cout << "EFETUANDO PROCESSAMENTO DE REQUEST PARA ROOT: " << effectiveRoot << " E URL: " << effectiveUrl << " NO SOCKET: " << this->getConnectFd() << std::endl;
-	if (Utils::_isRoot(url))
+	
+	//ENCONTRAR LOCATION CERTO
+	if (Utils::_isRoot(effectiveUrl))
 		rightLocation = this->_servLoc.find("/");
-	else
+ 	else
 	{
 		std::map<std::string, location_t>::const_iterator curLocation = this->_servLoc.begin();
 		for (; curLocation != this->_servLoc.end(); curLocation++)
 		{
-			if (_isRightLocation(curLocation, effectiveUrl))
+			if (_isRightLocation(curLocation->first, effectiveUrl))
+			{
 				rightLocation = curLocation;
+				break;
+			}
 		}
-	}
+	} 
 
+	//VER SE TEM LOCATION PARA EXECUTAR O METODO
 	if (method != "GET" && rightLocation == this->_servLoc.end())
 		throw std::runtime_error("403 Forbidden");
-		
+
+
 	if (rightLocation != this->_servLoc.end())
 	{
-		std::cout << "LOCATION: " << rightLocation->first << " ACHADO PARA: " << url << std::endl;
+		std::cout << "LOCATION: " << rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
 		const location_t &loc = rightLocation->second;
 		if (!loc.redirect.empty())
 		{
@@ -269,10 +268,25 @@ void Response::processRequest(const std::string &url, const std::string &method,
 	{
         effectiveUrl.erase(0, 1);
     }
-
-    std::string fullPath = effectiveRoot + effectiveUrl; 
-
-    if (method == "GET")
+	
+	//**PRECISO VERIFICAR EXT DE PY PARA CONCATENAR O PATH DO UPLOAD
+    if (method == "POST" && Utils::isExtensionOf(".py", effectiveUrl))
+	{
+		if (rightLocation->second.cgiPath.empty())
+			throw std::runtime_error("403 Forbidden: No upload path specified");
+		if (rightLocation->second.cgiPath[0] == '/')
+		{
+			effectiveCgiPath = rightLocation->second.cgiPath;
+			effectiveCgiPath = effectiveCgiPath.erase(0, 1);
+		}
+		fullPath = effectiveRoot + effectiveCgiPath + effectiveUrl;
+	}
+	else
+	{
+		fullPath = effectiveRoot + effectiveUrl;
+	}
+ 
+    if (method == "GET") //METODO GET
 	{
         std::cout << "EFETUANDO METODO GET PARA PATH: " << fullPath << std::endl; 
         if (Utils::directoryExists(fullPath))
@@ -281,7 +295,7 @@ void Response::processRequest(const std::string &url, const std::string &method,
 			{
                 return;
             }
-			else if (rightLocation != this->_servLoc.end() && rightLocation->second.autoindex) //guardar o location no objeto e verificar se há um location
+			else if (rightLocation != this->_servLoc.end() && rightLocation->second.autoindex)
 			{
 				std::cout << "TENTANDO AUTOINDEX EM: " << rightLocation->second.autoindex << std::endl;
                 serveAutoindex(fullPath, this->getConnectFd());
@@ -297,26 +311,23 @@ void Response::processRequest(const std::string &url, const std::string &method,
         }
 		else if (Utils::fileExists(fullPath))
 		{
+			//verifica se eh um script e executa o script
             serveFile(fullPath, this->getConnectFd());
         }
 		else
 		{
             throw std::runtime_error("404 Not Found: File or directory does not exist");
         }
-/* 		else if (!this->_servLoc.at("/").tryFile.empty() && serveTryFile(effectiveRoot + this->_servLoc.at("/").tryFile))
-		{
-            return;
-        } */
     }
-	else if (method == "POST")
+	else if (method == "POST") //METODO POST
 	{
         std::cout << "EFETUANDO METODO POST PARA PATH: " << fullPath << std::endl; 
-        processPost(fullPath);
+        //processPost(fullPath);
     }
-	else if (method == "DELETE")
+	else if (method == "DELETE") //METODO DELETE
 	{
         std::cout << "EFETUANDO METODO DELETE PARA PATH: " << fullPath << std::endl; 
-        processDelete(fullPath);
+        //processDelete(fullPath);
     }
 	else
 	{

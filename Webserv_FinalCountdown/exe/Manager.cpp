@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/03 21:16:17 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 18:02:06 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,14 +190,14 @@ void Manager::_storeRequest()
 	char	buffer[2048] = {0};
 	int		bytes = recv(this->getPollSocket(), buffer, 2048, 0); //VER MAIS SOBRE MASCARAS DE FLAGS
 	
-	//write(1, "\n", 1); //TO DEBUG
-	//write(1, buffer, bytes); //TO DEBUG
+	write(1, "\n", 1); //TO DEBUG
+	write(1, buffer, bytes); //TO DEBUG
 	//print_invisible(buffer); //TO DEBUG
-	//write(1, "\n", 1); //TO DEBUG
+	write(1, "\n", 1); //TO DEBUG
 	
 	if (bytes > 0)
 		this->REFconnect->appendToRequest(buffer, bytes);
-	else //ISSO AQUI SO VAI SER EXECUTADO SE DER ERRO NA LEITURA DO REQUEST ou SE A CONEXAO FOR FECHADA PELO CLIENTE
+	else
 		this->_closeConnect();
 }
 
@@ -207,8 +207,6 @@ void Manager::_askToresponse()
 	//write(1, "\tHI DO ASKTORESPONSE()\n", 19); //TO DEBUG
 
 	//**VERIFICAR SE A CONEXÃO NÃO ESTÁ EM TIMEOUT isTimeout(), SE SIM FECHA E RETORNA
-	//**VERIFICAR SE A CONEXÃO ESTÁ PRONTA PARA ENVIAR RESPOSTA isReadyToSend(), SE NÃO RETORNA
-	//**VEFICAR O SERVIDOR NON DEFAULT
 	if (this->REFconnect->getRequest().getFlagToResponse())
 	{
 		this->REFconnect->runRequest(*this->HEADserver);

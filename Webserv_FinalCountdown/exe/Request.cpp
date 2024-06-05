@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:10:47 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/03 16:58:45 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 14:24:15 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,17 +90,17 @@ void Request::_setMethodAndURL(std::stringstream &ss)
     bool hasValidHTTP = std::strcmp(method_URL_version[2].c_str(), "HTTP/1.1\r") == 0;
 
     if (!hasValidAmount)
-        throw std::runtime_error("_setMethodAndURL: 400 Bad Request TO hasValidAmount"); //response
+        throw std::runtime_error("400 Bad Request TO hasValidAmount"); //response
     if (!hasAllowedMethod)
-        throw std::runtime_error("_setMethodAndURL: 501 Not Implemented"); //responses
+        throw std::runtime_error("501 Not Implemented TO hasAllowedMethod"); //responses
     if (hasSensibleURL)
-        throw std::runtime_error("_setMethodAndURL: 400 Bad Request TO hasSensibleURL"); //response
+        throw std::runtime_error("400 Bad Request TO hasSensibleURL"); //response
     if (!hasValidURLSize)
-        throw std::runtime_error("_setMethodAndURL: 414 URI Too Long"); //response
+        throw std::runtime_error("414 URI Too Long TO hasValidURLSize"); //response
     if (hasUnsupportedHTTP)
-        throw std::runtime_error("_setMethodAndURL: 505 HTTP Version Not Supported"); //response
+        throw std::runtime_error("505 HTTP Version Not Supported TO hasUnsupportedHTTP"); //response
     if (!hasValidHTTP)
-        throw std::runtime_error("_setMethodAndURL: 400 Bad Request TO hasValidHTTP"); //response
+        throw std::runtime_error("400 Bad Request TO hasValidHTTP"); //response
 
     this->_method = method_URL_version[0];
     this->_url = Utils::_decoder(method_URL_version[1]);

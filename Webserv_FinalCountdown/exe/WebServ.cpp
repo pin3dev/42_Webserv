@@ -28,7 +28,7 @@ WebServ::WebServ(std::vector<Server> servers) : _polling(), _vServers(servers), 
 	_countAndCheckVirtualServers();
 	_configVirtualServers();
 	
-	//printServerVec(); //TO DEBUG 
+	printServerVec(); //TO DEBUG 
 	//debugMsg("WebServ Ready!\n\r\n");  //TO DEBUG 
 }
 WebServ::~WebServ()

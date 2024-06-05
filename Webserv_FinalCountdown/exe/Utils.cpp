@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 15:11:45 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/28 11:53:09 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/05 21:48:45 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ bool	Utils::isExtensionOf(std::string const &ext, std::string const &fullname)
 {
 	if (fullname.length() < ext.length())
 		return false;
-	std::string tmp = fullname.substr(fullname.length() - ext.length());
+	std::string tmp = fullname.substr((fullname.length() - ext.length()));
 	return (tmp == ext);
 }
 
@@ -101,7 +101,7 @@ bool Utils::isParentDirOf(const std::string& parent, const std::string& son)
 }
 
 
-bool Utils::defaultGetUrl(std::string const &url, std::string const &method)
+/* bool Utils::defaultGetUrl(std::string const &url, std::string const &method)
 {
 	if (method == "GET")
 	{
@@ -109,13 +109,16 @@ bool Utils::defaultGetUrl(std::string const &url, std::string const &method)
 			return true;
 	}
 	return false;
-}
+} */
 bool Utils::_isRootFile(const std::string& url)
 {
 	size_t firstSlashPos = url.find_first_of('/');
     size_t lastSlashPos = url.find_last_of('/');
     size_t dotPos = url.find_last_of('.');
 
+	// Se houver mais que uma barra
+	if (firstSlashPos != lastSlashPos)
+		return false;
     // Se não houver ponto
     if (dotPos == std::string::npos)
     {
@@ -126,9 +129,6 @@ bool Utils::_isRootFile(const std::string& url)
 	{
 		return false;
 	}
-	// Se houver mais que uma barra
-	if (firstSlashPos != lastSlashPos)
-		return false;
 	// Retorna verdadeiro se houver ao meno 1 caracter após o ponto, se não falso	
 	return (dotPos + 1 < url.length());
 }
@@ -169,6 +169,65 @@ std::string Utils::_itoa(int n)
 	std::stringstream ss;
 	ss << n;
 	return ss.str();
+}
+
+
+
+/** 
+ * **************************************
+ * SECTION - TO DELETE
+ * **************************************
+ */
+
+
+
+std::string Utils::getFileType(std::string const &file)
+{
+	std::map<std::string, std::string> types;
+
+	types["txt"] = "text/plain";
+	types["html"] = "text/html";
+	types["css"] = "text/css";
+
+	types["js"] = "application/javascript";
+	types["py"] = "application/python";
+
+	types["jpg"] = "image/jpg";
+	types["jpeg"] = "image/jpeg";
+	types["png"] = "image/png";
+	types["gif"] = "image/gif";
+
+	if (file.find_last_of(".") != std::string::npos)
+	{
+		std::string extension = file.substr(file.find_last_of(".") + 1);
+		if (types.find(extension) != types.end())
+			return (types[extension]);
+	}
+	return ("text/plain");
+}
+
+std::string Utils::getFileContent(std::string const &path)
+{
+	std::string content;
+	std::ifstream file(path.c_str(), std::ios::binary | std::ios::in);
+
+	content.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	file.close();
+	return (content);
+}
+
+
+std::string Utils::generateResponseOK(std::string const &path)
+{
+	std::string response = 
+		"HTTP/1.1 200 OK\n"
+		"Date: " + Utils::_getTimeStamp("%a, %d %b %Y %H:%M:%S GMT") + "\n" +
+		"Server: Webserv/1.0.0 (Linux)\n" +
+		"Connection: keep-alive\n" +
+		"Content-Type: " + Utils::getFileType(path) + "; charset=utf-8\n" +
+		"Content-Length: " + Utils::_itoa(Utils::getFileContent(path).length()) + "\n\n";
+
+	return (response + Utils::getFileContent(path));
 }
 
 
