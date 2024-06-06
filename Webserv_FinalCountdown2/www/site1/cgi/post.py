@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
-import os, sys, cgi,cgitb
+import os, sys, cgi, cgitb
 
 cgitb.enable()
 
 form = cgi.FieldStorage()
-method = os.environ.get("REQUEST_METHOD")
-upload_dir = os.environ.get("UPLOAD_PATH")  # Diretório padrão de upload
+method = os.environ["REQUEST_METHOD"]
+upload_dir = os.environ["UPLOAD_PATH"]
 
 #print("Content-Type: text/html\n")
 #print(f"<p>Método: {method}</p>")
 #print(f"<p>Campos do formulário: {form.list}</p>")
 
 if method == "POST":
-    print(f"""
+    print("""
     <!DOCTYPE html>
     <html lang="pt-BR">
     <head>
@@ -37,9 +37,9 @@ if method == "POST":
                 <nav>
                     <ul>
                         <li><a href="/index.html">Início</a></li>
-                        <li><a href="/get.py">Tutorial</a></li>
-                        <li><a href="/post.html">Carregar</a></li>
-                        <li><a href="/delete.py">Apagar</a></li>
+                        <li><a href="/tutorial.html">Tutorial</a></li>
+                        <li><a href="/carregar.html">Carregar</a></li>
+                        <li><a href="/apagar.html">Apagar</a></li>
                     </ul>
                 </nav>
             </header>
@@ -57,15 +57,15 @@ if method == "POST":
             try:
                 with open(filepath, "wb") as f:
                     f.write(file_item.file.read())
-                print(f"<h3>File '<b>{filename}</b>' carregado com sucesso para '<h3>{filepath}</b>'.</p>")
+                print(f"<h3>File '<b>{filename}</b>' carregado com sucesso para <h3>{filepath}</b>.</p>")
             except Exception as e:
                 print(f"<h3>Erro ao carregar o arquivo: {e}</h3>")
         else:
-            print(f"<h3>Erro ao carregar o arquivo: nenhum arquivo foi fornecido.</h3>")
+            print("<h3>Erro ao carregar o arquivo: nenhum arquivo foi fornecido.</h3>")
     else:
-        print(f"<h3>Nenhum arquivo foi carregado.</h3>")
+        print("<h3>Nenhum arquivo foi carregado.</h3>")
 
-    print(f"""
+    print("""
             </div>
             <footer>
                 <p>Copyright © 2024 Clara Franco & Ívany Pinheiro.</p>
@@ -75,7 +75,7 @@ if method == "POST":
     </html>
     """)
 else:
-    print(f"Content-Type: text/html\n")
-    print(f"<html><body><p>Erro: método HTTP não suportado.</p></body></html>")
+    print("Content-Type: text/html\n")
+    print("<html><body><p>Erro: método HTTP não suportado.</p></body></html>")
 
 sys.exit(0)

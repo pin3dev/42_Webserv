@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/06 20:43:14 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/06 21:49:38 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,6 @@ void Connect::_exportEnviron(CGI &cgi)
 	cgi.setNewEnv("SERVER_PROTOCOL", "HTTP/1.1");
 	cgi.setNewEnv("SERVER_SOFTWARE", "Webserv/1.0");
 	cgi.setNewEnv("ROOT_FOLDER" , this->_myServer->getRoot());
-
 	cgi.setNewEnv("SCRIPT_FILENAME" , this->_fullPath);
 	cgi.setNewEnv("REQUEST_METHOD", this->_myRequest.getMethod());
 	cgi.setNewEnv("CONTENT_TYPE" ,this->_myRequest.getHeadData()["Content-Type"]);
@@ -246,7 +245,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	std::string effectiveCgiPath;
 	std::string fullPath;
 	//std::map<std::string, location_t>::const_iterator rightLocation = this->_myServer->getLocations().end();
-    //std::cout << "EFETUANDO PROCESSAMENTO DE REQUEST PARA ROOT: " << effectiveRoot << " E URL: " << effectiveUrl << " NO SOCKET: " << this->getConnectFd() << std::endl;
+    std::cout << "EFETUANDO PROCESSAMENTO DE REQUEST PARA ROOT: " << effectiveRoot << " E URL: " << effectiveUrl << " NO SOCKET: " << this->getConnectFd() << std::endl;
 	
 	//ENCONTRAR LOCATION CERTO
 	if (Utils::_isRoot(effectiveUrl))
@@ -362,10 +361,12 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
         //std::cout << "EFETUANDO METODO POST PARA PATH: " << fullPath << std::endl; 
         this->_fullPath = fullPath;
 		//std::cout << this->_myRequest.getRequest() << std::endl;
-		CGI postCgi(fullPath, _effectiveUpload, this->_myRequest.getRequest(), this->_myRequest.getBodyLength());
+		CGI postCgi(fullPath, _effectiveUpload,this->_myRequest.getRequest(), this->_myRequest.getBodyLength());
 		this->_exportEnviron(postCgi);
-		postCgi._run();
-		Utils::generateResponseOK(".cgi");
+		postCgi.execute();
+		std::string response = Utils::autoHTML("200", "OK","cgi.html");
+		write(this->_connect_fd, response.c_str(), response.length()); 
+		//Utils::generateResponseOK("cgi.txt");
     }
 	else if (method == "DELETE") //METODO DELETE
 	{

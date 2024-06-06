@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:22:02 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/06 20:43:24 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/06 21:49:23 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <iostream>
 #include <cstring>
 #include <exception>
+#include <stdlib.h>
 
 //CUSTOM INCLUDES
 //#include "Connect.hpp"
@@ -49,17 +50,14 @@ class CGI
         std::string _request;
         size_t      _requestLength;
 
-/*         std::vector<char*> _environ;
-        std::vector<char*> _args; */
-        std::vector<std::string> _environ;
-        char			**_envp;
-		char			*_args[4];
+        std::vector<char*> _environ;
+        std::vector<char*> _args;
 
         //char** _env;
 
-        //void    _setOutFile();
-        //void    _writeRequestToCGI();
-        //void    _runCGIandWriteHTML();
+        void    _setOutFile();
+        void    _writeRequestToCGI();
+        void    _runCGIandWriteHTML();
         //void    _exportEnv();
         void    _exportEnvPath();
         
