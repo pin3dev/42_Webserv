@@ -1,0 +1,378 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Connect.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
+/*   Updated: 2024/06/06 20:43:14 by pin3dev          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Connect.hpp"
+#include "Utils.hpp"
+
+
+/** 
+ * **************************************
+ * SECTION - CONSTRUCTORS & DESTRUCTORS
+ * **************************************
+*/
+
+Connect:: Connect(Server &server, int connect_fd) : _connect_fd(connect_fd), _urlLoopCount(0), 
+_myServer(&server), _effectiveUpload(""), _fullPath("")
+{
+    this->_updated = Utils::_nowTime();
+	this->_rightLocation = this->_myServer->getLocations().end();
+    this->_myRequest.setMaxLength(_myServer->getClientMaxBodySize()); //**CONFIGURADO NO CONSTRUCTOR DE CONNECT
+}
+
+Connect::~Connect()
+{
+	//close(this->_connect_fd);
+	//std::cout << "Connect destroyed" << std::endl;
+}
+
+
+
+/** 
+ * **************************
+ * SECTION - PUBLIC METHODS
+ * **************************
+*/
+
+void	Connect::appendToRequest(char const *buffer, size_t size)
+{
+    //this->_setUpdate(Utils::_nowTime()); 
+	this->_myRequest.toAppend(buffer, size); 
+}
+
+void	Connect::runRequest(std::vector<Server> &VecServers)
+{
+	//this->_sentRequest = true;
+    //this->_setUpdate(_nowTime()); 
+	try
+	{
+		this->_myRequest.checkStatusRequest();
+		this->_searchForNonDefaultServer(VecServers);
+		//std::string url = this->getRequest().getURL();
+		//std::string method = this->getRequest().getMethod();
+		this->_processRequest(this->getRequest().getURL(), this->getRequest().getMethod(), this->getServer().getRoot()); 
+	}
+	catch(const std::exception& e)
+	{
+		//std::cout << e.what() << std::endl;
+		std::string ErrorResponse;
+		ErrorResponse = Utils::autoHTML(e.what(), "Error", "www/site1/404.html");//**TEMPORARIO
+		write(this->_connect_fd, ErrorResponse.c_str(), ErrorResponse.size());
+		//this->_myResponse.errorHTML(e.what()); //**MUDAR PARA UMA FUNCAO AUTOMATICA
+		//**ACHO QUE TENHO QUE FECHAR A CONEX'AO AQUI
+	}
+
+/* 	this->_request.clear(); //
+	this->_requestPayload.clear(); 
+	this->_sentRequest = false; */
+}
+/** 
+ * **************************
+ * SECTION - GETTERS & SETTERS
+ * **************************
+*/
+
+
+int		Connect::getConnectFd() const {return (this->_connect_fd);}
+Request	&Connect::getRequest(){return (this->_myRequest);}
+//Response &Connect::getResponse(){return (this->_myResponse);}
+Server	&Connect::getServer(){return (*this->_myServer);}
+time_t	Connect::getLastUpdated() const{return (this->_updated);}
+void	Connect::_setUpdate(time_t now){this->_updated = now;}
+
+void	Connect::resetServer(Server *server)
+{
+	this->_myServer = server;
+	//**CHAMAR NOVAMENTE O SETTER DE this->_myRequest.setMaxLength COMO NO CONSTRUCTOR E CHAMAR O this->_myRequest.checkStatusRequest(); PARA VERFICACAO
+}
+
+
+/** 
+ * **************************
+ * SECTION - PRIVATE METHODS
+ * **************************
+*/
+
+/* bool	Connect::hasExpired() const
+{
+	return ((Utils::_nowTime() - this->_updated) > 60); 
+} */
+
+//**RESOLVER ESSE MÉTODO COM FLAGS MELHORES
+/* bool	Connect::isReady() const
+{
+	return (this->_updated == true || this->_request.find(REQUEST_END) != std::string::npos);
+} */
+
+void Connect::_searchForNonDefaultServer(std::vector<Server> &VecServers)
+{	
+	std::string requestHost = this->getRequest().getHost();
+	
+	if (requestHost == this->getServer().getServerName()) 
+		return;
+	
+	std::vector<Server>::iterator server = VecServers.begin();
+	for (; server != VecServers.end(); server++)
+	{
+		if (requestHost == server->getServerName() && server->getHost() == this->getServer().getHost())
+		{
+			this->resetServer(&(*server));
+			break;
+		}	
+	}
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+
+void serveFile(const std::string &fullPath, int _connectSocket)
+{
+    //std::cout << "Serving file: " << fullPath << std::endl;
+
+	std::ifstream file(fullPath.c_str(), std::ios::binary | std::ios::in);
+
+	if (!file.is_open())
+	{
+		write(_connectSocket, "HTTP/1.1 404 Not Found\n", 24);
+		return;
+	}
+	file.close();
+
+	/* Utils::generateResponseOK(fullPath) */
+	std::string response = Utils::autoHTML("200", "OK", fullPath);
+	write(_connectSocket, response.c_str(), response.length()); 
+}
+
+/* void serveError(int code, const std::string &message) {
+    std::cout << "Error " << code << ": " << message << std::endl;
+}
+ */
+
+/* 
+// Função para processar POST
+void processPost(const std::string &path) {
+    // Suponha que estamos recebendo dados para salvar em um arquivo
+    // Esta parte deve lidar com a leitura do corpo da requisição e salvar o conteúdo no path
+    //std::cout << "Processing POST request, saving data to: " << path << std::endl;
+    // Implementação fictícia para salvar dados
+    // Aqui você colocaria a lógica real para ler o corpo do POST e salvar o conteúdo
+}
+
+// Função para processar DELETE
+void processDelete(const std::string &path) {
+    //std::cout << "Processing DELETE request, deleting data from: " << path << std::endl;
+} */
+
+void serveAutoindex(const std::string &path, int _connectSocket)
+{
+	(void)_connectSocket, (void)path;
+/*     DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(path.c_str())) != NULL)
+	{
+        std::cout << "Index of " << path << ":\n";
+        while ((ent = readdir(dir)) != NULL)
+            std::cout << ent->d_name << "\n";
+        closedir(dir);
+    }
+	else
+        throw std::runtime_error("500 Unable to open directory"); */
+	
+}
+
+bool serveTryFile(const std::string &tryFilePath, int _connectSocket)
+{
+    if (Utils::fileExists(tryFilePath))
+	{
+        serveFile(tryFilePath, _connectSocket);
+        return true;
+    }
+    return false;
+}
+
+
+void	printMap(std::map<std::string, location_t> const &servLoc)
+{
+	std::map<std::string, location_t>::const_iterator it = servLoc.begin();
+	for (; it != servLoc.end(); it++)
+	{
+		std::cout << "KEY: " << it->first << std::endl;
+	}
+}
+
+
+void Connect::_exportEnviron(CGI &cgi)
+{
+	cgi.setNewEnv("GATEWAY_INTERFACE", "CGI/1.1");
+	cgi.setNewEnv("SERVER_PROTOCOL", "HTTP/1.1");
+	cgi.setNewEnv("SERVER_SOFTWARE", "Webserv/1.0");
+	cgi.setNewEnv("ROOT_FOLDER" , this->_myServer->getRoot());
+
+	cgi.setNewEnv("SCRIPT_FILENAME" , this->_fullPath);
+	cgi.setNewEnv("REQUEST_METHOD", this->_myRequest.getMethod());
+	cgi.setNewEnv("CONTENT_TYPE" ,this->_myRequest.getHeadData()["Content-Type"]);
+	cgi.setNewEnv("CONTENT_LENGHT", this->_myRequest.getHeadData()["Content-Length"]);
+	cgi.setNewEnv("UPLOAD_PATH", this->_effectiveUpload);
+	cgi.setNewEnv("USER_AGENT" ,this->_myRequest.getHeadData()["User-Agent"]);
+}
+
+
+//VARIAVEIS IMPORTANTES CRIADAS:
+/*
+-RIGHTLOCATION
+-EFECTIVEROOT 
+-EFFECTIVEURL
+-FULLPATH
+-EFFECTIVECGIPATH
+
+*/
+void Connect::_processRequest(const std::string &url, const std::string &method, const std::string &root)
+{
+	//std::cout << "\n\t1\n";
+	this->_urlLoopCount++;
+	//std::cout << "\n\t2\n";
+	//printMap(this->_myServer.getLocations());
+    std::string effectiveRoot = root; 
+    std::string effectiveUrl = url;
+	std::string effectiveCgiPath;
+	std::string fullPath;
+	//std::map<std::string, location_t>::const_iterator rightLocation = this->_myServer->getLocations().end();
+    //std::cout << "EFETUANDO PROCESSAMENTO DE REQUEST PARA ROOT: " << effectiveRoot << " E URL: " << effectiveUrl << " NO SOCKET: " << this->getConnectFd() << std::endl;
+	
+	//ENCONTRAR LOCATION CERTO
+	if (Utils::_isRoot(effectiveUrl))
+		this->_rightLocation = this->_myServer->getLocations().find("/");
+ 	else
+	{
+		std::map<std::string, location_t>::const_iterator curLocation = this->_myServer->getLocations().begin();
+		for (; curLocation != this->_myServer->getLocations().end(); curLocation++)
+		{
+			if (Utils::_isRightLocation(curLocation->first, effectiveUrl))
+			{
+				this->_rightLocation = curLocation;
+				break;
+			}
+		}
+	} 
+
+	//VER SE TEM LOCATION PARA EXECUTAR O METODO
+	if (method != "GET" && this->_rightLocation == this->_myServer->getLocations().end())
+		throw std::runtime_error("403 Forbidden");
+
+	//VERIFICAR SE O LOCATION TEM REDIRECT OU NOVO ROOT
+	if (this->_rightLocation != this->_myServer->getLocations().end())
+	{
+		//std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
+		const location_t &loc = this->_rightLocation->second;
+		if (!loc.redirect.empty())
+		{
+			effectiveUrl = loc.redirect;
+			//std::cout << "REDIRECIONANDO DE: " << url << " PARA: " << effectiveUrl << std::endl;
+			if (this->_urlLoopCount > 3)
+				throw std::runtime_error("Too many redirects or root changes\n");
+			this->_processRequest(effectiveUrl, method, root);
+			return;
+		}
+		if (!loc.root.empty())
+		{
+			//std::cout << "ROTEANDO DE: " << root << " PARA: " << effectiveRoot << std::endl;
+			effectiveRoot = loc.root;
+		}
+		if (!Utils::isMethodAllowed(loc.methods, method))
+		{
+			throw std::runtime_error("405 Method Not Allowed");
+			return;
+		}
+	}
+
+//-----------------------------------------------------------------------------------------
+
+	//LIMPEZA DE ROOTS E PATHS PARA CONCATENACAO
+	if (!effectiveUrl.empty() && effectiveUrl[0] == '/')
+	{
+        effectiveUrl.erase(0, 1);
+    }
+	if (method == "POST" && Utils::isExtensionOf(".py", effectiveUrl))
+	{
+		if (this->_rightLocation->second.cgiPath.empty())
+			throw std::runtime_error("403 Forbidden: No upload path specified");
+		if (this->_rightLocation->second.cgiPath[0] == '/')
+		{
+			effectiveCgiPath = this->_rightLocation->second.cgiPath;
+			effectiveCgiPath = effectiveCgiPath.erase(0, 1);
+		}
+		fullPath = effectiveRoot + effectiveCgiPath + effectiveUrl;
+	}
+	else
+	{
+		fullPath = effectiveRoot + effectiveUrl;
+	}
+//--------------------------------------------------------------------------------------------------- 
+	//EXECUCAO DOS METODOS
+    if (method == "GET") //METODO GET
+	{
+		//VERIFICAR SE O ARQUIVO EH SCRIPT
+        //std::cout << "EFETUANDO METODO GET PARA PATH: " << fullPath << std::endl; 
+        if (Utils::directoryExists(fullPath))
+		{
+			//GET PARA DIRETORIO
+			if (this->_rightLocation != this->_myServer->getLocations().end() && !this->_rightLocation->second.tryFile.empty() && serveTryFile((effectiveRoot + this->_rightLocation->second.tryFile), this->getConnectFd())) //guardar o location no objeto e verificar se há um location
+			{
+                return;
+            }
+			else if (this->_rightLocation != this->_myServer->getLocations().end() && this->_rightLocation->second.autoindex)
+			{
+				//std::cout << "TENTANDO AUTOINDEX EM: " << this->_rightLocation->second.autoindex << std::endl;
+                serveAutoindex(fullPath, this->getConnectFd());
+            }
+            else if (Utils::fileExists(fullPath + "index.html"))
+			{
+                serveFile((fullPath + "index.html"), this->getConnectFd());
+            }
+			else
+			{
+                throw std::runtime_error("403 Forbidden: No index file in directory");
+            }
+        }
+		else if (Utils::fileExists(fullPath))
+		{
+			//GET PARA FILE
+			//verifica se eh um script e executa o script
+            serveFile(fullPath, this->getConnectFd());
+        }
+		else
+		{
+            throw std::runtime_error("404 Not Found: File or directory does not exist");
+        }
+    }
+	else if (method == "POST") //METODO POST
+	{
+		if (this->_rightLocation->second.uploadTo.empty())
+			throw std::runtime_error("501 Not Implemented");
+		this->_effectiveUpload = effectiveRoot + this->_rightLocation->second.uploadTo;
+        //std::cout << "EFETUANDO METODO POST PARA PATH: " << fullPath << std::endl; 
+        this->_fullPath = fullPath;
+		//std::cout << this->_myRequest.getRequest() << std::endl;
+		CGI postCgi(fullPath, _effectiveUpload, this->_myRequest.getRequest(), this->_myRequest.getBodyLength());
+		this->_exportEnviron(postCgi);
+		postCgi._run();
+		Utils::generateResponseOK(".cgi");
+    }
+	else if (method == "DELETE") //METODO DELETE
+	{
+        //std::cout << "EFETUANDO METODO DELETE PARA PATH: " << fullPath << std::endl; 
+    }
+	else
+	{
+        throw std::runtime_error("405 Method Not Allowed");
+    }
+}

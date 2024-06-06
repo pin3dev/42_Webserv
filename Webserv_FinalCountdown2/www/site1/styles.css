@@ -1,0 +1,322 @@
+/* styles.css */
+body, html {
+  /* font-family: "Exo", sans-serif; */
+  /* font-family: "Ubuntu Mono", monospace; */
+  /* font-family: "Major Mono Display", monospace; */
+  /* font-family: "Libre Barcode 39 Text", system-ui; */
+  font-family: "DM Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 20;
+  font-style: normal;
+  margin: 0;  /* Remove as margens padrão */
+  padding: 0;  /* Remove o preenchimento padrão */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  background-color: #1C1C1C;  
+  color: #a3a1a1; 
+}
+
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;  
+  text-align: left;  
+  padding: 20px; 
+  padding-top: 5px;
+  z-index: 100;  /* Garante que o cabeçalho fique acima de outros elementos */
+  position: relative;  /* Posicionamento relativo para o z-index funcionar */
+}
+
+
+.container-top {
+  overflow: visible;
+  /* display: flex; */ 
+  /* flex-direction: column;  */
+  /* align-items: flex-start; */
+  /* justify-content: space-around;  */
+  width: 80%; /* ou uma largura fixa, dependendo do design */
+  max-width: 640px; /* largura máxima do container */
+  padding: 50px;
+  background: transparent; 
+  text-align: center;
+}
+
+.main-content {
+  flex: 1; /* Faz com que cada coluna ocupe uma fração igual do espaço disponível no container */
+  padding: 20px; /* Espaço dentro de cada coluna */
+}
+
+.main-content p {
+  color: #333; /* Define a cor do texto, se necessário */
+}
+
+/* @media (max-width: 600px) {
+  .container {
+      flex-direction: column;
+      width: 100%;
+      padding: 50px;
+  }
+} */
+
+.site-logo {
+  font-family: "Foldit", sans-serif;
+  font-size: 50px;
+  /* color: #a3a1a1; */
+  text-align: left;
+  margin: 0;  /* Remove a margem padrão */
+  margin-left: 10px;
+  margin-top: 50px; 
+  margin-bottom: -10px; /* Reduz o espaço entre o título e o subtítulo */
+}
+
+.site-slogan {
+  font-family: "Major Mono Display", monospace;
+  font-size: 10px;
+  color: #676666;
+  text-align: left;
+  margin: 0;
+  margin-left: 15px; 
+  margin-bottom: 10px;
+  padding-top: 0px; /* Certifique-se de que não há espaço extra acima */
+  line-height: 1; /* Ajusta a altura da linha para compactar o texto se necessário */
+  animation: fadeIn 5s;
+}
+
+
+nav {
+  width: 100%;
+  text-align: left;
+  /* margin-bottom: 30px; */
+  z-index: 5; /* Maior ainda para garantir visibilidade acima de outros conteúdos */
+  position: relative; /
+}
+
+nav ul {
+  list-style-type: none; /* Remove bullets da lista */
+  padding: 0; /* Remove padding padrão */
+  margin: 0; /* Remove margens padrão */
+  display: flex; /* Centraliza os itens na página */
+  flex-wrap: wrap; /* Permite que os itens de navegação envolvam em tamanhos de tela menores */
+}
+
+nav ul li {
+  display: flex; /* Organiza os itens em linha */
+  margin-right: 20px; /* Espaçamento entre os itens */
+}
+
+nav ul li a {
+  text-decoration: none; /* Remove sublinhado dos links */
+  color: #2bbc8a; 
+  font-weight: bold; 
+  font-size: 16px;
+  padding: 0 15px;
+  border-right: 1px dotted;
+  border-color: #2bbc8a;
+  /* vertical-align: middle */
+  align-items: center; /* Centraliza verticalmente o texto nos links */
+  display: flex;
+}
+
+nav ul li a:hover {
+  color: #a3a1a1; /* Cor do link ao passar o mouse */
+}
+
+
+.general-paragraph {
+  margin-bottom: 80px;
+}
+
+.image-container {
+  display: flex; /* Organiza as sub-divisões lado a lado */
+  justify-content: center; /* Centraliza horizontalmente no container */
+  align-items: center; /* Centraliza verticalmente no container */
+  width: 100%; /* Ajusta a largura do container das imagens */
+}
+
+.image-column {
+  flex: 1; /* Distribui o espaço igualmente entre as duas colunas */
+  text-align: center; /* Centraliza o conteúdo da coluna */
+  padding: 10px; /* Espaço dentro de cada coluna */
+  max-width: 200px; /* Limita a largura máxima da coluna para evitar imagens muito grandes */
+}
+
+.images img {
+  width: 100%; /* A imagem ocupará 100% da largura de `.image-column` */
+  height: 100%; /* A altura igual à largura para formar um círculo */
+  border-radius: 50%; /* Faz a imagem circular */
+  object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);  /* Sombreamento */
+  margin-bottom: 10px; /* Espaço abaixo da imagem */
+  border: 1px solid #2bbc8a;  /* Borda branca fina */
+}
+
+.title {
+  /* font-family: "Exo", sans-serif; */
+  /* font-family: "Ubuntu Mono", monospace; */
+  font-size: 24px; /* Altera o tamanho da fonte para 24px */
+  color: #2bbc8a; /* Define a cor do texto, se necessário */
+  margin-bottom: 20px; /* Espaço abaixo do título */
+  animation: colorChange 1s infinite;
+}
+
+.names {
+  margin: 0;
+  animation: colorChange 1s infinite;
+}
+
+.description {
+  font-size: 12px; /* Altera o tamanho da fonte para 18px */
+  color: #333; /* Define a cor do texto, se necessário */
+  line-height: 1.6; /* Ajusta o espaçamento entre as linhas */
+}
+
+footer {
+  font-size: 12px;
+  color: #333; 
+  background-color: transparent; 
+  text-align: left;
+  padding: 50px 0; /* Espaçamento interno acima e abaixo do texto */
+  margin-top: 0px; 
+  margin-left: 15px;
+}
+
+
+/* Animações */
+
+@keyframes colorChange {
+  0% { color: #2bbc8a; }
+  50% { color: #a3a1a1; }
+  100% { color: #2bbc8a; }
+}
+
+@keyframes fadeIn {
+from {
+  opacity: 0;
+}
+to {
+  opacity: 1;
+}
+}
+
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  padding: 50px;
+  background-color: #1C1C1C;
+  color: #a3a1a1;
+}
+
+.left-column, .right-column {
+  font-family: "Major Mono Display", monospace;
+  font-optical-sizing: auto;
+  font-weight: 20;
+  font-style: normal;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.right-column {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;  /* Mudança aqui para alinhar os itens à esquerda */
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;  /* Adicione padding para melhor visualização */
+  text-align: left;  /* Certifique-se que o texto dentro da coluna esteja alinhado à esquerda */
+}
+
+.error-image {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+}
+
+.error-title {
+  font-size: 80px;
+  color: #a3a1a1;
+  margin-bottom: 50px;
+  text-align: left;  /* Alinha o texto do título à esquerda */
+}
+
+.error-subtitle {
+  font-size: 15px;
+  color: #a3a1a1;
+  margin-bottom: -10px;
+  text-align: left;  /* Alinha o texto do título à esquerda */
+}
+
+.column-blog {
+  flex: 1; /* Faz com que cada coluna ocupe uma fração igual do espaço disponível no container */
+  padding: 0px; /* Espaço dentro de cada coluna */
+}
+
+.blog-post {
+  text-align: left;  /* Alinha o texto à esquerda */
+  background: transparent;
+  /* border-left: 4px solid #2bbc8a; */
+  padding: 20px;
+}
+
+.blog-post h3, .blog-post h4 {
+  color: #a3a1a1;
+}
+
+.blog-post p {
+  color: #333;
+}
+
+pre {
+  background-color: #333;
+  padding: 10px;
+  overflow: auto; /* Adiciona scroll horizontal se necessário */
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace;
+  color: #2bbc8a;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #2bbc8a; 
+  color: #333; 
+  text-align: center;
+  text-decoration: none; 
+  border-radius: 25px; 
+  font-family: "DM Mono", monospace;
+  font-optical-sizing: auto;
+  font-size: 16px;
+  font-weight: bold; 
+  transition: background-color 0.3s, color 0.3s;  /* Suaviza a transição de cores */
+  cursor: pointer;  
+  border: none; 
+}
+
+.button-link:hover, .button-link:focus {
+  background-color: #229472; 
+  color: #ffffff; 
+  text-decoration: none; 
+}
+
+.input-text {
+  display: block;
+  width: 100%; /* Preenche a largura do container */
+  padding: 8px 10px;
+  margin-bottom: 10px; /* Espaço abaixo do input */
+  border-radius: 25px; /* Borda arredondada */
+  border: 2px solid #2bbc8a; /* Borda com cor semelhante ao botão */
+  font-size: 16px;
+  color: #333;
+}
+
+
+
