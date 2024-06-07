@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:10:47 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 15:14:31 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 16:06:33 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,9 +168,7 @@ void    Request::_setPayload(std::stringstream &ss)
         this->setFirstRead(false);
         return ;
     }
-
 	this->_payload.resize(this->getBodyLength()); 
-    //this->_payload = "";
 	binarySs.read(&this->_payload[0], this->getBodyLength());
 }
 
@@ -214,19 +212,7 @@ bool	Request::getFlagToFirstRead() const{return (this->_firstRead);}
 void    Request::setFirstRead(bool status){this->_firstRead = status;}
 void   Request::setMaxLength(size_t length){this->_maxLength = length;}
 void    Request::setReadyToResponse(bool status){this->_readyToResponse = status;}
-/* void    Request::clearAllRequest()
-{
-        _request;
 
-		_url;
-		_method;
-        _host;
-		_payload;
-		_bodyLength;
-        _maxLength;
-        _readyToResponse;
-		_headerData;
-} */
 
 
 

@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 14:57:18 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 16:03:59 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,7 @@ HEADpollfd(NULL), HEADserver(NULL), HEADconnect(NULL)
 	this->IDconnect = 0;
 }
 Manager::~Manager()
-{
-/* 	this->_type.clear();
-	this->_type = "";
-	this->_IDpseudo = 0;
-	this->IDconnect = 0;
-	this->REFserver = NULL;
-	this->REFconnect = NULL;
-	this->HEADserver = NULL;
-	this->HEADconnect = NULL;
-	this->HEADpollfd = NULL; */
-}
+{}
 
 
 /** 

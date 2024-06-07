@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:11:34 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 15:04:20 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 16:03:05 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Request
         std::string _host;
 		std::string	_payload;
 		size_t		_bodyLength;
-        size_t      _maxLength; //**CONFIGURADO NO CONSTRUCTOR DE CONNECT
+        size_t      _maxLength;
         bool		_readyToResponse;
         bool        _firstRead;
 		std::map<std::string, std::string>	_headerData;

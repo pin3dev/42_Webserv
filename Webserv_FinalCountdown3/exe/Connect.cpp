@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 14:58:07 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 16:51:10 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ bool	Connect::isExpired()
 void	Connect::setServer(Server *server)
 {
 	this->_myServer = server;
-	//**CHAMAR NOVAMENTE O SETTER DE this->_myRequest.setMaxLength COMO NO CONSTRUCTOR E CHAMAR O this->_myRequest.checkStatusRequest(); PARA VERFICACAO
+	this->_myRequest.setMaxLength(_myServer->getClientMaxBodySize());
 }
 
 

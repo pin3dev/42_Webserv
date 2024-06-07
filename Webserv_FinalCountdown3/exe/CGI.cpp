@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:22:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 12:14:35 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 16:59:50 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,22 @@ void	CGI::_setOutFile()
 		throw std::runtime_error("500 Internal Server Error");
 }
 
+
+ssize_t write_all(int fd, const void* buf, size_t count)
+{
+    size_t bytes_left = count;
+    const char* buffer = (const char*)buf;
+    while (bytes_left > 0) {
+        ssize_t bytes_written = write(fd, buffer, bytes_left);
+        if (bytes_written <= 0) {
+            return -1; // erro ao escrever
+        }
+        bytes_left -= bytes_written;
+        buffer += bytes_written;
+    }
+    return count;
+}
+
 void	CGI::_writeRequestToCGI()
 {
 	if (pipe(this->_pipefd) == -1)
@@ -90,10 +106,10 @@ void	CGI::_writeRequestToCGI()
 	if (this->_requestLength > 0)
 		fcntl(this->_pipefd[WRITE_END], F_SETPIPE_SZ, this->_requestLength);
 	
-	write(this->_pipefd[WRITE_END], this->_request.data(), this->_requestLength);
+	//write_all(this->_pipefd[WRITE_END], this->_request.data(), this->_request.size());
+	write(this->_pipefd[WRITE_END], this->_request.data(), this->_request.size());
 	close(this->_pipefd[WRITE_END]);
-}
-
+} 
 
 
 void	CGI::_runCGIandWriteHTML()
@@ -196,4 +212,5 @@ void	CGI::_executeBin(int &file, int (&fd)[2])
 	//PASSA O CAMINHO DO INTERPRETADOR DE PYTHON, OS ARGV, E O ENV PARA EXECUTAR O SCRIPT
 	if (execve(python3.c_str(), this->_args, this->_envp) == -1) //EXECUTA O SCRIPT E VERIFICA SE O SCRIPT PODE SER EXECUTADO
 		throw std::runtime_error("500 Internal Server Error");
-} */
+}
+ */
