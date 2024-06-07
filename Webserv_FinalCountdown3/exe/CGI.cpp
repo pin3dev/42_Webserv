@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:22:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 16:59:50 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 19:59:11 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,13 @@ void	printVec(std::vector<char*> &vec)
 CGI::CGI(std::string fullPath, std::string uploadTo, std::string request, size_t requestLength) : _outFile(0), _status(0), _fullPath(fullPath),
 _uploadTo(uploadTo), _request(request), _requestLength(requestLength), _environ()
 {
-/* 	std::cout << "\nCGI CRIADO:\n"
+	std::cout << "\nCGI CRIADO:\n"
 		<< "outFile: " << _outFile << std::endl
 		<< "status: " << _status << std::endl
 		<< "fullPath: " << _fullPath << std::endl
+		<< "uploadTo: " << _uploadTo << std::endl
 		<< "request: " << _request << std::endl
-		<< "requestLength: " << _requestLength << std::endl; */
+		<< "requestLength: " << _requestLength << std::endl;
 }
 
 CGI::~CGI()
@@ -38,7 +39,7 @@ CGI::~CGI()
 void CGI::_exportEnvPath()
 {
 	this->_environ.push_back(NULL);
-	this->_args.push_back(const_cast<char*>("python3"));
+	//this->_args.push_back(const_cast<char*>("python3"));
 	this->_args.push_back(const_cast<char*>(this->_fullPath.c_str()));
 	this->_args.push_back(const_cast<char*>(this->_uploadTo.c_str()));
 	this->_args.push_back(NULL);
@@ -58,8 +59,8 @@ void CGI::setNewEnv(std::string key, std::string value)
 {
 	//std::cout << "trying to execute...\n";
     this->_exportEnvPath();
-	//printVec(this->_args);
-	//printVec(this->_environ);
+	printVec(this->_args);
+	printVec(this->_environ);
     this->_setOutFile();
     this->_writeRequestToCGI();
 	pid_t pid = fork();
@@ -97,7 +98,7 @@ ssize_t write_all(int fd, const void* buf, size_t count)
     }
     return count;
 }
-
+//**FIQUEI SEM ENTENDER SE ISSO EH CHAMADO 2 VEZES PARA IMG
 void	CGI::_writeRequestToCGI()
 {
 	if (pipe(this->_pipefd) == -1)
@@ -111,13 +112,12 @@ void	CGI::_writeRequestToCGI()
 	close(this->_pipefd[WRITE_END]);
 } 
 
-
 void	CGI::_runCGIandWriteHTML()
 {
-	for(size_t i = 0; this->_args[i]; i++)
+/* 	for(size_t i = 0; this->_args[i]; i++)
 		std::cout << this->_args[i] << std::endl;
 	for(size_t i = 0; this->_environ[i]; i++)
-		std::cout << this->_environ[i] << std::endl;
+		std::cout << this->_environ[i] << std::endl; */
 	dup2(this->_pipefd[READ_END], STDIN_FILENO);
 	close(this->_pipefd[READ_END]);
 	dup2(this->_outFile, STDOUT_FILENO);

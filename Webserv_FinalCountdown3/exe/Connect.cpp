@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 16:51:10 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 20:22:07 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ _myServer(&server), _effectiveUpload(""), _fullPath("")
 {
     this->_updated = Utils::_nowTime();
 	this->_rightLocation = this->_myServer->getLocations().end();
+	this->_cgiLocation = this->_myServer->getLocations().find(".py");
     this->_myRequest.setMaxLength(_myServer->getClientMaxBodySize());
 }
 
@@ -291,6 +292,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	{
 		fullPath = effectiveRoot + effectiveUrl;
 	}
+	std::cout << "FULLPATH: " << fullPath << std::endl;
 //--------------------------------------------------------------------------------------------------- 
 	//EXECUCAO DOS METODOS
     if (method == "GET") //METODO GET
@@ -345,8 +347,17 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
     }//------------------------------------------------------------------------------------------------------------
 	else if (method == "DELETE") //METODO DELETE
 	{
-        //std::cout << "EFETUANDO METODO DELETE PARA PATH: " << fullPath << std::endl; 
-    }//------------------------------------------------------------------------------------------------------------
+		if (remove(fullPath.c_str()) == 0)
+		{
+			std::string response = Utils::autoHTML("200", "OK", "");
+			write(this->_connect_fd, response.c_str(), response.length());
+		}
+		else //SE A REMOÇÃO DO ARQUIVO FALHAR 
+		{
+			std::string response = Utils::autoHTML("400", "OK", "");
+			write(this->_connect_fd, response.c_str(), response.length());
+		}
+	}//------------------------------------------------------------------------------------------------------------
 	else
 	{
         throw std::runtime_error("405 Method Not Allowed");

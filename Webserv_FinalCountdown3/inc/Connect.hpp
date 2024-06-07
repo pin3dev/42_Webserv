@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:05:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 11:20:03 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 18:34:55 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Connect
 		Request		_myRequest;
 
 		std::map<std::string,location_t>::const_iterator _rightLocation;
+		std::map<std::string,location_t>::const_iterator _cgiLocation;
 		std::string _effectiveUpload;
 		std::string _fullPath;
 

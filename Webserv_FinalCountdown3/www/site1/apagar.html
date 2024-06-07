@@ -43,7 +43,7 @@
         <div class="main-content">
             <h3>Apague ficheiros carregados</h3>
             <p>No espaço abaixo, escreva o nome do ficheiro, e carregue no botão, se o arquivo existir, será apagado da memória do nosso servidor físico</p>
-        
+
             <form id="delete-form">
                 <input type="text" name="filename" id="filename" class="input-text" placeholder="Digite o nome do arquivo aqui" required>
                 <button type="submit" class="button-link">DELETAR</button>
@@ -59,15 +59,6 @@
                     fetch(url, {
                         method: 'DELETE',
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-                        alert('Arquivo deletado com sucesso!');
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        alert('Erro ao deletar arquivo.');
-                    });
                 });
             </script>
             
