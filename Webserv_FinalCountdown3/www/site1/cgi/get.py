@@ -1,4 +1,18 @@
+#!/usr/bin/env python3
 
+import os
+import sys
+import cgi
+import cgitb
+
+cgitb.enable()
+
+form = cgi.FieldStorage()
+method = os.environ["REQUEST_METHOD"]
+upload_dir = os.environ["UPLOAD_PATH"]
+
+if method == "GET":
+    print(f"""
     <!DOCTYPE html>
     <html lang="pt-BR">
     <head>
@@ -37,7 +51,7 @@
                 <h3>TimeStamp</h3>
                 <p>Abaixo esta o horario do request feito, aproveite para acabar essa avaliacao, e ir comer e relaxar,
                 e nos deixar fazer o mesmo, obrigada!</p>
-                <p>21:42:16</p>
+                <p>{upload_dir}</p>
             </div>
             <footer>
                 <p>Copyright © 2024 Clara Franco & Ívany Pinheiro.</p>
@@ -45,4 +59,9 @@
         </div>
     </body>
     </html>
-    
+    """)
+else:
+    print("Content-Type: text/html\n")
+    print("<html><body><p>Erro: método HTTP não suportado.</p></body></html>")
+
+sys.exit(0)

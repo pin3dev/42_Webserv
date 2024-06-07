@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 20:22:07 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 21:29:13 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,7 +277,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	{
         effectiveUrl.erase(0, 1);
     }
-	if (method == "POST" && Utils::isExtensionOf(".py", effectiveUrl))
+	if ((method == "POST" || method == "GET") && Utils::isExtensionOf(".py", effectiveUrl))
 	{
 		if (this->_rightLocation->second.cgiPath.empty())
 			throw std::runtime_error("403 Forbidden: No upload path specified");
@@ -297,6 +297,16 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	//EXECUCAO DOS METODOS
     if (method == "GET") //METODO GET
 	{
+		if (Utils::isExtensionOf(".py", fullPath))
+		{
+			CGI getCgi(fullPath, "", "", 0);
+			this->_effectiveUpload = Utils::_getTimeStamp("%H:%M:%S");
+			this->_exportEnviron(getCgi);
+			getCgi.execute();
+			std::string response = Utils::autoHTML("200", "OK","cgi.html");
+			write(this->_connect_fd, response.c_str(), response.length()); 
+		}
+			
 		//VERIFICAR SE O ARQUIVO EH SCRIPT
         //std::cout << "EFETUANDO METODO GET PARA PATH: " << fullPath << std::endl; 
         if (Utils::directoryExists(fullPath))

@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:22:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 19:59:11 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 20:24:33 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ CGI::~CGI()
 void CGI::_exportEnvPath()
 {
 	this->_environ.push_back(NULL);
-	//this->_args.push_back(const_cast<char*>("python3"));
+	this->_args.push_back(const_cast<char*>("python3"));
 	this->_args.push_back(const_cast<char*>(this->_fullPath.c_str()));
 	this->_args.push_back(const_cast<char*>(this->_uploadTo.c_str()));
 	this->_args.push_back(NULL);

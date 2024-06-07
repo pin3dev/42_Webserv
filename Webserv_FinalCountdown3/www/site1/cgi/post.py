@@ -40,6 +40,7 @@ if method == "POST":
                         <li><a href="/tutorial.html">Tutorial</a></li>
                         <li><a href="/carregar.html">Carregar</a></li>
                         <li><a href="/apagar.html">Apagar</a></li>
+                        <li><a href="/timestamp.html">Tempo</a></li>
                     </ul>
                 </nav>
             </header>
