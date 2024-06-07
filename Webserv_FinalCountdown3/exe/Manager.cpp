@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 11:53:14 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 14:57:18 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,11 @@ void Manager::_askToresponse()
 	if (!this->REFconnect->getRequest().getFlagToResponse())
 		return;
 	this->REFconnect->runRequest(*this->HEADserver);
+	if (!this->REFconnect->getRequest().getFlagToResponse())
+	{
+		std::cout << "TENTEI ARMAZENAR MAS VAI TER QUE TENTAR DE NOVO\n";
+		return;
+	}
 	this->_closeConnect();
 }
 

@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:10:47 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 11:31:27 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 15:14:31 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ std::string const Request::_HTTPunsupported[3] = {"HTTP/0.9\r", "HTTP/1.0\r", "H
  * **************************************
 */
 
-Request::Request() : _readyToResponse(false)
+Request::Request() : _readyToResponse(false), _firstRead(true)
 {
     this->_request.clear();
     this->_url.clear();
@@ -33,6 +33,7 @@ Request::Request() : _readyToResponse(false)
     this->_headerData.clear();
     this->_maxLength = 0; //*TESTER
 }
+
 Request::~Request()
 {}
 
@@ -49,7 +50,7 @@ void	Request::toAppend(char const *buffer, size_t size)
     std::string partRequest = buffer;
 
     if (partRequest.find("\r\n"))
-        this->setReadyToResponse(true); 
+        this->setReadyToResponse(true);
 }
 
 
@@ -62,11 +63,14 @@ void	Request::toAppend(char const *buffer, size_t size)
 void	Request::checkStatusRequest()
 {
 	std::stringstream	ss(this->_request);
-    this->_setMethodAndURL(ss);
-	this->_setHeaders(ss);
+    if (this->getFlagToFirstRead())
+    {
+        this->_setMethodAndURL(ss);
+        this->_setHeaders(ss);
+        this->_setHost();
+    }
 	if (this->_method == "POST")
         this->_setPayload(ss);
-    this->_setHost();
 }
 
 
@@ -135,19 +139,38 @@ void    Request::_setPayload(std::stringstream &ss)
 {
     this->_setBodyLength();
 
+    if (!this->getFlagToFirstRead())
+    {
+        std::string line;
+        while (std::getline(ss, line))
+        {
+            if (line == "\r")
+                break;
+        }
+    }
+    
     std::streampos pos = ss.tellg();
 /*     if (pos == -1)
         throw std::runtime_error("Nothing else to read. No Payload!\n"); */
 	std::stringstream binarySs(ss.str(), std::stringstream::in | std::stringstream::binary);
 	binarySs.seekg(pos);
 
-/*  
+ 
     //RESOLUCAO DE PROBLEMA DE LIXO NA MEMORIA DO PAYLOAD
     std::string tempPayload(this->getBodyLength(), '\0');
     binarySs.read(&tempPayload[0], this->getBodyLength());
-     */
+
+    std::streamsize bytesRead = binarySs.gcount();
+    if (bytesRead < static_cast<std::streamsize>(this->getBodyLength()))
+    {
+        std::cout << "PAYLOAD INCOMPLETE\n";
+        this->setReadyToResponse(false);
+        this->setFirstRead(false);
+        return ;
+    }
+
 	this->_payload.resize(this->getBodyLength()); 
-    this->_payload = "";
+    //this->_payload = "";
 	binarySs.read(&this->_payload[0], this->getBodyLength());
 }
 
@@ -185,7 +208,10 @@ size_t  Request::getBodyLength() const {return (this->_bodyLength);}
 size_t Request::getMaxLength() const {return (this->_maxLength);}
 std::map<std::string, std::string> Request::getHeadData() const {return (this->_headerData);}
 bool	Request::getFlagToResponse() const{return (this->_readyToResponse);}
+bool	Request::getFlagToFirstRead() const{return (this->_firstRead);}
 
+
+void    Request::setFirstRead(bool status){this->_firstRead = status;}
 void   Request::setMaxLength(size_t length){this->_maxLength = length;}
 void    Request::setReadyToResponse(bool status){this->_readyToResponse = status;}
 /* void    Request::clearAllRequest()

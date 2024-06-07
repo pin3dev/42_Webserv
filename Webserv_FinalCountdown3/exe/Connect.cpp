@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 12:10:47 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 14:58:07 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 	try
 	{
 		this->_myRequest.checkStatusRequest();
+		if (!this->_myRequest.getFlagToResponse())
+			return ;
 		this->_searchForNonDefaultServer(VecServers);
 		this->_processRequest(this->getRequest().getURL(), this->getRequest().getMethod(), this->getServer().getRoot()); 
 		std::cout << "REQUEST RESPONDIDO...\n";
@@ -67,7 +69,7 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 		//this->_myResponse.errorHTML(e.what()); //**MUDAR PARA UMA FUNCAO AUTOMATICA
 		//**ACHO QUE TENHO QUE FECHAR A CONEX'AO AQUI
 	}
-	this->_myRequest.setReadyToResponse(false);
+	//this->_myRequest.setReadyToResponse(false);
 /* 	this->_request.clear(); //
 	this->_requestPayload.clear();  */
 }
@@ -104,6 +106,7 @@ void	Connect::setServer(Server *server)
  * **************************
 */
 
+
 void Connect::_searchForNonDefaultServer(std::vector<Server> &VecServers)
 {	
 	std::string requestHost = this->getRequest().getHost();
@@ -117,6 +120,7 @@ void Connect::_searchForNonDefaultServer(std::vector<Server> &VecServers)
 		if (requestHost == server->getServerName() && server->getHost() == this->getServer().getHost())
 		{
 			this->setServer(&(*server));
+			//this->_myRequest.setReadyToResponse(false);
 			break;
 		}	
 	}

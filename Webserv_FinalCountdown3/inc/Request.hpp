@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:11:34 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 10:39:29 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/07 15:04:20 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class Request
 		size_t		_bodyLength;
         size_t      _maxLength; //**CONFIGURADO NO CONSTRUCTOR DE CONNECT
         bool		_readyToResponse;
+        bool        _firstRead;
 		std::map<std::string, std::string>	_headerData;
         
         void    _setMethodAndURL(std::stringstream &ss);
@@ -68,8 +69,11 @@ class Request
         size_t  getMaxLength() const;
         std::map<std::string, std::string> getHeadData() const;
         bool	getFlagToResponse() const;
+        bool	getFlagToFirstRead() const;
 
 
+        void    setAllClean();
         void    setMaxLength(size_t length);
         void    setReadyToResponse(bool status);
+        void    setFirstRead(bool status);
 };
