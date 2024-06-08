@@ -6,13 +6,12 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 21:29:13 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 21:55:39 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Connect.hpp"
 #include "Utils.hpp"
-
 
 /** 
  * **************************************
@@ -64,9 +63,11 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 	catch(const std::exception& e)
 	{
 		//std::cout << e.what() << std::endl;
-		std::string ErrorResponse;
-		ErrorResponse = Utils::autoHTML(e.what(), "Error", "www/site1/404.html");//**TEMPORARIO
-		write(this->_connect_fd, ErrorResponse.c_str(), ErrorResponse.size());
+		//std::string ErrorResponse;
+		//ErrorResponse = Utils::autoHTML(e.what(), "Error", "www/site1/404.html");//**TEMPORARIO
+		
+		std::string myWhat = e.what();
+		write(this->_connect_fd, e.what(), myWhat.size());
 		//this->_myResponse.errorHTML(e.what()); //**MUDAR PARA UMA FUNCAO AUTOMATICA
 		//**ACHO QUE TENHO QUE FECHAR A CONEX'AO AQUI
 	}
@@ -242,7 +243,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 
 	//VER SE TEM LOCATION PARA EXECUTAR O METODO
 	if (method != "GET" && this->_rightLocation == this->_myServer->getLocations().end())
-		throw std::runtime_error("403 Forbidden");
+		throw std::runtime_error(Utils::_defaultErrorPages(403, "Nao foi encontrado location para o metodo solicitado"));
 
 	//VERIFICAR SE O LOCATION TEM REDIRECT OU NOVO ROOT
 	if (this->_rightLocation != this->_myServer->getLocations().end())
@@ -254,7 +255,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			effectiveUrl = loc.redirect;
 			//std::cout << "REDIRECIONANDO DE: " << url << " PARA: " << effectiveUrl << std::endl;
 			if (this->_urlLoopCount > 3)
-				throw std::runtime_error("Too many redirects or root changes\n");
+				throw std::runtime_error(Utils::_defaultErrorPages(508, "Foi detectado um loop de redirecionamentos."));
 			this->_processRequest(effectiveUrl, method, root);
 			return;
 		}
@@ -265,7 +266,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		}
 		if (!Utils::isMethodAllowed(loc.methods, method))
 		{
-			throw std::runtime_error("405 Method Not Allowed");
+			throw std::runtime_error(Utils::_defaultErrorPages(405, "Metodo nao permitido pelo location"));
 			return;
 		}
 	}
@@ -280,7 +281,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	if ((method == "POST" || method == "GET") && Utils::isExtensionOf(".py", effectiveUrl))
 	{
 		if (this->_rightLocation->second.cgiPath.empty())
-			throw std::runtime_error("403 Forbidden: No upload path specified");
+			throw std::runtime_error(Utils::_defaultErrorPages(403, "Nao foi encontrado path para cgi no location"));
 		if (this->_rightLocation->second.cgiPath[0] == '/')
 		{
 			effectiveCgiPath = this->_rightLocation->second.cgiPath;
@@ -327,7 +328,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
             }
 			else
 			{
-                throw std::runtime_error("403 Forbidden: No index file in directory");
+                throw std::runtime_error(Utils::_defaultErrorPages(403, "Nenhum arquivo index.html foi encontrado no diretorio"));
             }
         }
 		else if (Utils::fileExists(fullPath))
@@ -338,13 +339,13 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
         }
 		else
 		{
-            throw std::runtime_error("404 Not Found: File or directory does not exist");
+            throw std::runtime_error(Utils::_defaultErrorPages(404, "O diretorio ou arquivo nao foi encontrado."));
         }
     }//------------------------------------------------------------------------------------------------------------
 	else if (method == "POST") //METODO POST
 	{
 		if (this->_rightLocation->second.uploadTo.empty())
-			throw std::runtime_error("501 Not Implemented");
+			throw std::runtime_error(Utils::_defaultErrorPages(501, "Nenhum diretorio definido para upload"));
 		this->_effectiveUpload = effectiveRoot + this->_rightLocation->second.uploadTo;
         //std::cout << "EFETUANDO METODO POST PARA PATH: " << fullPath << std::endl; 
         this->_fullPath = fullPath;
@@ -370,6 +371,6 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	}//------------------------------------------------------------------------------------------------------------
 	else
 	{
-        throw std::runtime_error("405 Method Not Allowed");
+        throw std::runtime_error(Utils::_defaultErrorPages(405, "Os metodos permitidos sao GET, POST e DELETE."));
     }
 }

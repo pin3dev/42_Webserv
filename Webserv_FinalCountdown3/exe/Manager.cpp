@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 16:03:59 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 22:17:23 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ void Manager::_createConnect()
 {
 	int newConnect_fd = accept(this->REFserver->getSocket(), NULL, NULL);
 	if (newConnect_fd < 0)
-		throw std::runtime_error("Error: accept() failed\n");
+		throw std::runtime_error(Utils::_defaultErrorPages(500, "Servidor nao foi capaz de aceitar nova conexao.\nProblema no Manager::_createConnect()"));
 	
 	fcntl(newConnect_fd, F_SETFL, O_NONBLOCK);
 	

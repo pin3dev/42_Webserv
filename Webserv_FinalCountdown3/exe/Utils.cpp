@@ -6,11 +6,33 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 15:11:45 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/06 22:08:33 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 22:06:00 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
+
+std::map<int, std::string> Utils::_errorHTML = Utils::initErrorMap();
+
+std::map<int, std::string> Utils::initErrorMap()
+{
+    std::map<int, std::string> m;
+
+	m[400] = "Bad Request";
+	m[403] = "Forbidden";
+	m[404] = "Not Found";
+	m[405] = "Method Not Allowed";
+	m[406] = "Not Acceptable";
+	m[409] = "Conflict";
+	m[411] = "Length Required";
+	m[413] = "Payload Too Large";
+	m[414] = "URI Too Long";
+	m[500] = "Internal Server Error";
+	m[501] = "Not Implemented";
+	m[505] = "HTTP Version Not Supported";
+	m[508] = "Loop Detected";
+	return m;
+}
 
 time_t Utils::_nowTime()
 {
@@ -155,6 +177,52 @@ std::string Utils::_itoa(int n)
 	std::stringstream ss;
 	ss << n;
 	return ss.str();
+}
+
+
+
+std::string Utils::_defaultErrorPages(int status, std::string subText)
+{
+/* 	if (status == 404)
+	{
+		//verificar se a pagina existe e servir
+		return ;
+	} */
+	std::string statusDescrip = _errorHTML[status];
+
+	std::string BodyPage = 
+	"<!DOCTYPE html>\n"
+	"<html lang=\"pt-BR\">\n"
+	"<head>\n"
+	"    <meta charset=\"UTF-8\">\n"
+	"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">\n"
+	"    <link rel=\"canonical\" href=\"https://www.site1/index.html\" />\n"
+	"    <link rel=\"shortcut icon\" href=\"/favicon.ico\">\n"
+	"    <title>Tutorial</title>\n"
+	"    <link rel=\"stylesheet\" href=\"styles.css\">\n"
+	"    <link href=\"https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Major+Mono+Display&display=swap\" rel=\"stylesheet\">\n"
+	"</head>\n"
+	"<body>\n"
+	"    <div class=\"container-top\">\n"
+	"        <h3 class=\"title\">Error " + Utils::_itoa(status) + ": " + statusDescrip + "</h3>\n"
+	"        <p class=\"general-paragraph\">" + subText + " </p>\n"
+	"        <footer>\n"
+	"            <p>Copyright © 2024 Clara Franco & Ívany Pinheiro.</p>\n"
+	"        </footer>\n"
+	"    </div>\n"
+	"</body>\n"
+	"</html>\n";
+
+	std::string HTMLHeaders = 
+	"HTTP/1.1 " + Utils::_itoa(status) + " " + statusDescrip + "\n"
+	"Date: " + Utils::_getTimeStamp("%a, %d %b %Y %H:%M:%S GMT") + "\n" +
+	"Server: Webserv/1.0.0 (Linux)\n" +
+	"Connection: keep-alive\n" +
+	"Content-Type: text/html; charset=utf-8\n" +
+	"Content-Length: " + Utils::_itoa(BodyPage.size()) + "\n\n";
+
+	std::string HtmlErrorContent = HTMLHeaders + BodyPage;
+	return (HtmlErrorContent);
 }
 
 

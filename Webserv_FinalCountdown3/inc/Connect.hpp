@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:05:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 18:34:55 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 20:46:39 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,9 @@ class Connect
 
 		void 	_processRequest(const std::string &url, const std::string &method, const std::string &root);
 		void    _exportEnviron(CGI &cgi);
-	
+		void	_defaultErrorPages(int status, std::string subText);
+		void 	_initErrorMap();
+
 		
 	public:
 		Connect(Server &server, int connect_fd);

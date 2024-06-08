@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:10:47 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 16:06:33 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 22:27:41 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,17 +88,17 @@ void Request::_setMethodAndURL(std::stringstream &ss)
     bool hasValidHTTP = std::strcmp(method_URL_version[2].c_str(), "HTTP/1.1\r") == 0;
 
     if (!hasValidAmount)
-        throw std::runtime_error("400 Bad Request TO hasValidAmount"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(400, "Erro na primeira linha do request."));
     if (!hasAllowedMethod)
-        throw std::runtime_error("501 Not Implemented TO hasAllowedMethod"); //responses
+        throw std::runtime_error(Utils::_defaultErrorPages(501, "Os metodos permitidos sao: GET, POST e DELETE."));
     if (hasSensibleURL)
-        throw std::runtime_error("400 Bad Request TO hasSensibleURL"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(400, "O URL requisitado tem um caminho sensivel como: .. ou ../"));
     if (!hasValidURLSize)
-        throw std::runtime_error("414 URI Too Long TO hasValidURLSize"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(414, "O URL requisitado passa do tamanho limite seguro."));
     if (hasUnsupportedHTTP)
-        throw std::runtime_error("505 HTTP Version Not Supported TO hasUnsupportedHTTP"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(505, "A unica versao suportada para esse servidor e o HTTP 1.1"));
     if (!hasValidHTTP)
-        throw std::runtime_error("400 Bad Request TO hasValidHTTP"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(400, "Versao HTTP errada."));
 
     this->_method = method_URL_version[0];
     this->_url = Utils::_decoder(method_URL_version[1]);
@@ -119,7 +119,7 @@ void	Request::_setHeaders(std::stringstream &ss)
 			Utils::_trim(value, " \t\r\v\f");
 
 			if (value.length() == 0 || key.length() == 0)
-				throw std::runtime_error("_setHeaders: 400 Bad Request");
+				throw std::runtime_error(Utils::_defaultErrorPages(406, "Header do request foge a estrutura key:value"));
 			this->_headerData[key] = value;
 		}
 	}
@@ -176,17 +176,17 @@ void    Request::_setBodyLength()
 {
     bool hasContentLength = this->_headerData.find("Content-Length") != this->_headerData.end();
     if (!hasContentLength)
-        throw std::runtime_error("_setBodyLength: 411 Length Required"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(411, "Request sem Content-Length definido"));
     
     std::string const lenght = this->_headerData["Content-Length"];
     
     bool isDigit = lenght.find_first_not_of("0123456789") == std::string::npos;
     if (!isDigit)
-        throw std::runtime_error("_setBodyLength: 409 Conflict"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(409, "Request com Content-Length mal definido")); //response
     
     size_t size = std::atoi(lenght.c_str());
     if (size > this->getMaxLength())
-        throw std::runtime_error("_setBodyLength: 413 Payload Too Large"); //response
+        throw std::runtime_error(Utils::_defaultErrorPages(413, "Request com Payload maior que o definido pelo Content-Length")); //response
 
     this->_bodyLength = size;
 }

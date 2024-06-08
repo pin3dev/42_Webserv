@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 20:42:34 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/03 20:54:14 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 22:16:47 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void Configurator::_createSocket()
 		this->_server.setSocket(socket(AF_INET, SOCK_STREAM, 0));
 
 		if (this->_server.getSocket() < 0)
-			throw std::runtime_error("ERROR: _initSocket() failed\n");
+			throw std::runtime_error("Problema no Configurator::_createSocket()");
 	}
 }
 
@@ -56,13 +56,13 @@ void Configurator::_setReuse()
 	int active = 1;
 
 	if (setsockopt(this->_server.getSocket(), SOL_SOCKET, SO_REUSEADDR, &active, sizeof(int)) < 0)
-		throw std::runtime_error("ERROR: _setReuse() failed\n");
+		throw std::runtime_error("Problema no Configurator::_setReuse()");
 }
 
 void Configurator::_getHostAddr()
 {
 	if (getaddrinfo(this->_server.getHost().c_str(), this->_server.getPort().c_str(), &this->_settings, &this->_tmpAddr) != 0)
-		throw std::runtime_error("ERROR: _getHostAddr() failed\n");
+		throw std::runtime_error("Problema no Configurator::_getHostAddr()");
 }
 
 void Configurator::_assignAddr()
@@ -70,14 +70,14 @@ void Configurator::_assignAddr()
 	if (this->_tmpAddr)
 	{
 		if (bind(this->_server.getSocket(), this->_tmpAddr->ai_addr, this->_tmpAddr->ai_addrlen) < 0)
-        	throw std::runtime_error("ERROR: _assignAddr() failed\n");
+        	throw std::runtime_error("Problema no Configurator::_assignAddr()");
 	}
 }
 
 void Configurator::_setPassive()
 {
 	if (listen(this->_server.getSocket(), this->_maxConnections) < 0)
-		throw std::runtime_error("ERROR: _setPassive() failed\n");
+		throw std::runtime_error("Problema no Configurator::_setPassive()");
 }
 //** 
 void Configurator::freeTmpAddr()

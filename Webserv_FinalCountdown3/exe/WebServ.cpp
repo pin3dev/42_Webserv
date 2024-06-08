@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 17:51:59 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/06 22:11:57 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 22:15:37 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void WebServ::_cleaningPolling()
 void WebServ::_runPolling()
 {
 	if (poll(this->_polling.data(), this->_polling.size(), 200) < 0 && this->gShutDown == false)
-		throw std::runtime_error("Polling error!\n");
+		throw std::runtime_error("Timeout do Polling.");
 }
 
 /** 
@@ -152,7 +152,7 @@ void WebServ::_countAndCheckVirtualServers()
 			this->_DSAmount++;
 	}
 	if (this->_DSAmount <= 0)
-		throw(std::runtime_error("No virtual default server found!"));
+		throw std::runtime_error("Nenhum servidor default foi definido!");
 }
 
 /** 

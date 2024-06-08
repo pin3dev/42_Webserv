@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 15:11:42 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/06 13:18:10 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 20:58:24 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ class Utils
         ~Utils();
         
     public:
+        static std::map<int, std::string> _errorHTML;
+        static std::map<int, std::string> initErrorMap();
+        static std::string _defaultErrorPages(int status, std::string subText);
         static time_t _nowTime();
         static std::string _getTimeStamp(const char *format);
         static std::vector<std::string> _split(std::string const &str, char delim);

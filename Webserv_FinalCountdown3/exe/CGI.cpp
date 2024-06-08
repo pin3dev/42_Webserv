@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:22:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/07 20:24:33 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/08 21:39:41 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void CGI::setNewEnv(std::string key, std::string value)
 	pid_t pid = fork();
 
 	if (pid == -1)
-		throw std::runtime_error("500 Internal Server Error");
+		throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema no CGI::execute()"));
 
 	if (pid == 0)
 		this->_runCGIandWriteHTML();
@@ -80,7 +80,7 @@ void CGI::setNewEnv(std::string key, std::string value)
 void	CGI::_setOutFile()
 {
 	if ((this->_outFile = open("cgi.html", O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1)
-		throw std::runtime_error("500 Internal Server Error");
+		throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema no CGI::_setOutFile()"));
 }
 
 
@@ -102,7 +102,7 @@ ssize_t write_all(int fd, const void* buf, size_t count)
 void	CGI::_writeRequestToCGI()
 {
 	if (pipe(this->_pipefd) == -1)
-		throw std::runtime_error("500 Internal Server Error");
+		throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema no CGI::_writeRequestToCGI()"));
 	
 	if (this->_requestLength > 0)
 		fcntl(this->_pipefd[WRITE_END], F_SETPIPE_SZ, this->_requestLength);
@@ -127,7 +127,7 @@ void	CGI::_runCGIandWriteHTML()
 
 
 	if (execve(python3.c_str(), &(this->_args[0]), &(this->_environ[0])) == -1)
-		throw std::runtime_error("500 Internal Server Error");
+		throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema no CGI::_runCGIandWriteHTML()"));
 }
 
 
