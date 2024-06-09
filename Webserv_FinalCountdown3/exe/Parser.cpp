@@ -29,10 +29,7 @@ void Parser::initAttributes()
     initializeValidKeywords();
     this->fileStream.open(this->confPath.c_str());
     if (!this->fileStream.is_open())
-    {
-        std::cout << "erro abertura" << std::endl;
-        exit(1); //REMOVER
-    }
+        throw std::runtime_error("Error: Couldn't open .conf file.");
     this->bracketOpen = 0;
     this->foundServer = false;
 }
@@ -56,12 +53,9 @@ Server Parser::parseAndCreateServer(std::string &token, char& currentChar, std::
     std::pair<std::string, location_t> locationPair;
     std::map<std::string, location_t> locationMap;
     if (token != "server")
-    {
-		std::cout << "novo bloco deveria iniciar com server" << std::endl; 
-        exit (1); //REMOVER
-        //throw std::runtime_error(ERR_BLOCK_START(this->_token.value, intToString(this->_line)));
-    }
-	this->settings.clear();
+        throw std::runtime_error("Error: Conf block must start with \"server\".");
+	
+    this->settings.clear();
 	while (token != "}" && token != "END")
 	{			
         if(token != "server")
@@ -76,11 +70,7 @@ Server Parser::parseAndCreateServer(std::string &token, char& currentChar, std::
     if (this->bracketOpen == 0)
         return(Server(this->settings, servers, locationMap));
     else
-    {
-        //throw std::runtime_error("Unclosed brackets detected at the end of file.");
-        std::cout << "Unclosed brackets detected at the end of file." <<std::endl;
-        exit(1);
-    }
+        throw std::runtime_error("Error: Bracket error detected.");
 }
 
 std::pair<std::string, location_t> Parser::getLocationPair(char& currentChar)
@@ -104,10 +94,7 @@ std::map<std::string, std::string> Parser::extractLocationSettings(char& current
     std::string token;
 
     if(this->checkNextToken(currentChar) != "{")
-    {
-        std::cout << "location deve ser seguido de {" << std::endl;
-        exit(1); //REMOVER
-    }
+        throw std::runtime_error("Error: Location must be followed by \"{\"." );
     token = this->checkNextToken(currentChar);
     while (!this->fileStream.eof() && token != "}")
     {
@@ -185,20 +172,12 @@ void Parser::addSettingPair(std::string const &key, char& currentChar, std::map<
         if(currentChar == '{')
             break;
         if (std::isspace(currentChar) && key != "allow_methods" && key != "location")
-        {
-            std::cout << "mais de um valor" << std::endl;
-            exit(1);
-            //throw std::runtime_error(ERR_MANY_VALUES(keyword, intToString(this->_line)));
-        }
+            throw std::runtime_error("Error: More than one value.");
 		value += currentChar;
 		currentChar = this->fileStream.get();
 	}
     if (value.empty())
-    {
-        std::cout << "Erro: Nenhum valor encontrado antes do ponto e virgula." << std::endl;
-        exit(1);
-        //throw std::runtime_error("Nenhum valor encontrado antes do ponto e virgula.");
-    }
+        throw std::runtime_error("Error: No value found before semicolon.");
     settings[key] = value;
 }
 
@@ -232,9 +211,9 @@ std::string Parser::checkNextToken(char &currentChar)
         currentChar = this->fileStream.get();
     }
     if (this->bracketOpen != 0)
-        throw std::runtime_error("Unclosed brackets detected at the end of file.");
+        throw std::runtime_error("Error: Bracket error detected.");
     if (!this->foundServer)
-        throw std::runtime_error("No server configuration found.");
+        throw std::runtime_error("Error: No server configuration found.");
     token = "END";
     return token;
 }
@@ -253,8 +232,8 @@ bool Parser::skipSpacesAndComments(char &currentChar)
     if (currentChar == '#') 
     {
         std::string discardedLine;
-        std::getline(this->fileStream, discardedLine);  // Le e descarta o restante da linha
-        currentChar = this->fileStream.get();  // Le o proximo caractere apos a nova linha
+        std::getline(this->fileStream, discardedLine); 
+        currentChar = this->fileStream.get(); 
         return true;
     }
     return false;
@@ -268,20 +247,12 @@ std::string Parser::extractKeyword(char &currentChar, std::string &keyword)
         currentChar = this->fileStream.get();
     }
     if (validKeywords.find(keyword) == validKeywords.end()) 
-    {
-        std::cout << "Invalid keyword" + keyword << std::endl;
-        exit(1); // REMOVER
-        //throw std::runtime_error("Invalid keyword: " + keyword); // ver
-    }
+        throw std::runtime_error("Error: Invalid keyword: " + keyword);
     if (keyword == "server")
     {
         this->foundServer = true;
         if(checkNextToken(currentChar) != "{")
-        {
-            std::cout << "server deveria ser seguido de {" << std::endl; 
-            exit (1); //REMOVER
-            //throw std::runtime_error(ERR_BLOCK_START(this->_token.value, intToString(this->_line)));
-        }
+            throw std::runtime_error("Error: Server should be followed by \"{\"");
     }
     return (keyword);
 }
@@ -309,19 +280,11 @@ void Parser::initializeValidKeywords()
 void Parser::verifyArguments(int ac, char **av)
 {
     if(ac > 2)
-    {
-        std::cout << "erro muitos argumentos" << std::endl;
-        exit(1); //REMOVER
-    }
+        throw std::runtime_error("Error: Too many arguments");
     else if(ac == 2)
-    {
         this->confPath = av[1];
-    }
     else
-    {
-        std::cout << "this->confPath vai receber caminho padrao" << std::endl;
-        exit(1); //REMOVER
-    }
+        this->confPath = "default.conf";
 }
 
 void Parser::verifyConfFile()
@@ -334,24 +297,32 @@ void Parser::verifyConfFile()
 		filename = this->confPath.substr(slash + 1);
     dot = filename.find_last_of(".");
 	if (dot == std::string::npos || filename.substr(dot) != ".conf" || filename.length() <= std::string(".conf").length())
-	{
-		std::cout << "erro extensao conf" << std::endl;
-        exit(1); //REMOVER
-    }
+		throw std::runtime_error("Error: Extension should be .conf");
 }
 
 std::vector<std::string> Parser::getStringTokens(std::string const &s, char c)
 {
-	std::vector<std::string> tokens;
-	std::stringstream ss(s);
-	std::string token;
+    std::vector<std::string> tokens;
+    std::stringstream ss(s);
+    std::string token;
+    std::vector<std::string> possibleMethods;
 
-	while (std::getline(ss, token, c))
-	{
-		if (!token.empty())
-			tokens.push_back(token);
-	}
-	return tokens;
+    possibleMethods.push_back("GET");
+    possibleMethods.push_back("POST");
+    possibleMethods.push_back("DELETE");
+
+    while (std::getline(ss, token, c))
+    {
+        if (!token.empty())
+        {
+            if (std::find(possibleMethods.begin(), possibleMethods.end(), token) == possibleMethods.end())
+            {
+                throw std::runtime_error("Error: This server only supports GET, POST, and DELETE methods");
+            }
+            tokens.push_back(token);
+        }
+    }
+    return tokens;
 }
 
 /////////////////////////DEBBUG

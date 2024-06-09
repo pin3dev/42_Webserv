@@ -41,23 +41,13 @@ void Server::checkServerSettings(std::map<std::string, std::string> const &setti
 	for (int i = 0; i < 5; i++)
 	{
 		if (settings.find(mandatory[i]) == settings.end())
-        {
-            std::cout << "Missing keyword '" + mandatory[i] + "' in server block" << std::endl;
-            //exit(1);
-            //throw std::runtime_error(ERR_KEYWORD_MISSING(mandatory[i]));
-            throw std::runtime_error("ERROR: Server::checkServerSettings()");
-        }	
+            throw std::runtime_error("Error: Missing keyword '" + mandatory[i] + "' in server block");	
 	}
 
 	for (int i = 0; i < 6; i++)
 	{
 		if (settings.find(forbidden[i]) != settings.end())
-        {
-            std::cout << "Keyword '" + forbidden[i] + "' is not allowed in server block" << std::endl;
-            //exit(1);
-            //throw std::runtime_error(ERR_FORBIDDEN_KEYWORD(forbidden[i]));
-            throw std::runtime_error("ERROR: Server::checkServerSettings()");
-        }
+            throw std::runtime_error("Keyword '" + forbidden[i] + "' is not allowed in server block");
 	}
 }
 
@@ -83,12 +73,7 @@ std::string Server::ensureUniqueServerName(std::vector<Server> const &servers, s
     for (it = servers.begin(); it != servers.end(); it++) 
     {
         if (!name.empty() && it->serverName == name)
-        {
-            std::cout << "Duplicate server name '" + name + "'. Server names must be unique" << std::endl;
-            //exit(1);
-            //throw std::runtime_error(ERR_DUPLICATE_NAME(name));
-            throw std::runtime_error("Server::ensureUniqueServerName()");
-        }  
+            throw std::runtime_error("Error: Duplicate server name");  
     }
 	return name;
 }
@@ -100,12 +85,7 @@ std::string Server::validateRootPath(std::string const &root)
 	if (tmp[tmp.length() - 1] != '/')
 		tmp += "/";
 	if (!directoryExists(tmp))
-    {
-        std::cout << "'" + tmp + "' is not a valid directory" << std::endl;
-        //exit(1);
-		//throw std::runtime_error(ERR_DIRECTORY(tmp));
-        throw std::runtime_error("Server::validateRootPath()");
-    }
+        throw std::runtime_error("Error: Root does not have a valid directory");
 	return (tmp);
 }
 
@@ -114,12 +94,7 @@ std::string Server::validatePortNumber(std::string const &port)
     int portNumber = atoi(port.c_str());
 
     if (port.find_first_not_of("0123456789") != std::string::npos || portNumber < 0 || portNumber > 65535)
-    {
-        std::cout << "Invalid port number: " + port << std::endl;
-        //exit(1);
-        //throw std::runtime_error("Invalid port number: " + port);
-        throw std::runtime_error("Server::validatePortNumber()");
-    }
+        throw std::runtime_error("Error: Invalid port number: " + port);
     return port;
 }
 
@@ -139,12 +114,7 @@ size_t Server::parseSizeWithSuffix(std::string const &size)
 
     if ((!suffix.empty() && suffix.find_first_not_of("bBkKmMgG") != std::string::npos) ||
         numberPart.find_first_not_of("0123456789.") != std::string::npos)
-        {
-            std::cout << "'" + size + "' is not a valid size. Size must be a number positive or a number followed by a sufix (b - B, k - K, m - M, g - G)" << std::endl;
-            //exit(1);
-            //throw std::runtime_error(ERR_MAX_SIZE_INPUT(size));
-            throw std::runtime_error("Server::parseSizeWithSuffix()");
-        }   
+            throw std::runtime_error("Error: '" + size + "' is not a valid size.");  
     value = atof(numberPart.c_str());
     // value is treated as bytes by default. Conversions are only applied to K, M and G suffixes.
     if (suffix == "k" || suffix == "K")
@@ -155,12 +125,7 @@ size_t Server::parseSizeWithSuffix(std::string const &size)
         value *= 1024 * 1024 * 1024;
 
     if (value > MAX_SIZE_LIMIT)
-    {
-        std::cout << "'" + size + "' is not a valid size. The max value allowed is 10G (10737418240 bytes)" << std::endl;
-        //exit(1);
-        //throw std::runtime_error(ERR_MAX_SIZE_RANGE(size));
-        throw std::runtime_error("Server::parseSizeWithSuffix()");
-    }
+        throw std::runtime_error("Error: '" + size + "' is not a valid size.");
     return static_cast<size_t>(value);
 }
 
@@ -171,21 +136,11 @@ std::string Server::validatePagePath(std::string const &page)
         size_t dot = page.find_last_of(".");
         
         if (dot == std::string::npos || page.substr(dot) != ".html" || page.length() <= std::string(".html").length())
-        {
-            std::cout << "'" + page + "' is a invalid file. Pages must be .html" << std::endl;
-            //exit(1);
-            //throw std::runtime_error(ERR_PAGE_EXT(page));
-            throw std::runtime_error("Server::validatePagePath()");
-        }
+            throw std::runtime_error("Error: Pages must be .html");
         std::string path = this->root + page;
         std::ifstream file(path.c_str());
         if (!file.good())
-        {
-            std::cout << "Couldn't open page '" + page + "'" << std::endl;
-            //exit(1);
-            //throw std::runtime_error(ERR_PAGE_FIND(path));
-            throw std::runtime_error("Server::validatePagePath()");
-        }
+            throw std::runtime_error("Error: Couldn't open page '" + page + "'");
         file.close();
     }
     return page;
