@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 15:11:45 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/08 22:06:00 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/09 19:46:59 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,17 @@ bool Utils::fileExists(std::string const &fullpath)
 		return (/* (std::cout << "O CAMINHO: " << fullpath << " É UM ARQUIVO!\n"), */ true);
 	return (/* (std::cout << "O CAMINHO: " << fullpath << " NÃO É UM ARQUIVO!\n"), */ false);
 }
+
+bool Utils::isReadeableFile(std::string const &fullpath)
+{
+	struct stat fileStat;
+
+	if (stat(fullpath.c_str(), &fileStat) != 0)
+		return (false);
+	else if ((fileStat.st_mode & S_IRUSR) != 0) 
+		return (true);
+	return (false);
+}
 std::string Utils::_itoa(int n)
 {
 	std::stringstream ss;
@@ -311,7 +322,6 @@ std::string Utils::autoHTML(std::string const &status, std::string const &status
 
 	return (response + fileContent);
 }
-
 
 
 void Utils::print_invisibles(const std::string& text)

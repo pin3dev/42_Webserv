@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 15:11:42 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/08 20:58:24 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/09 19:40:39 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ class Utils
         static std::string autoHTML(std::string const &status, std::string const &statusDescrip, std::string const &fullPath);
         static bool isMethodAllowed(const std::vector<std::string> &methods, const std::string &method);
         static bool	_isRightLocation(std::string locName, std::string &url);
+        static bool isReadeableFile(std::string const &fullpath);
 
 
 };

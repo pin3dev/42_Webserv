@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/08 21:55:39 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/09 20:50:57 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,8 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 	}
 	catch(const std::exception& e)
 	{
-		//std::cout << e.what() << std::endl;
-		//std::string ErrorResponse;
-		//ErrorResponse = Utils::autoHTML(e.what(), "Error", "www/site1/404.html");//**TEMPORARIO
-		
 		std::string myWhat = e.what();
 		write(this->_connect_fd, e.what(), myWhat.size());
-		//this->_myResponse.errorHTML(e.what()); //**MUDAR PARA UMA FUNCAO AUTOMATICA
 		//**ACHO QUE TENHO QUE FECHAR A CONEX'AO AQUI
 	}
 	//this->_myRequest.setReadyToResponse(false);
@@ -134,50 +129,96 @@ void Connect::_searchForNonDefaultServer(std::vector<Server> &VecServers)
 
 void serveFile(const std::string &fullPath, int _connectSocket)
 {
-	std::ifstream file(fullPath.c_str(), std::ios::binary | std::ios::in);
+/*	std::ifstream file(fullPath.c_str(), std::ios::binary | std::ios::in);
 
-	if (!file.is_open()) //**ver outra forma de verificar se o arquivo pode ser aberto
-	{
-		write(_connectSocket, "HTTP/1.1 404 Not Found\n", 24);
-		return;
-	}
-	file.close();
-
+ 	if (!file.is_open())
+		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o arquivo."));
+	file.close(); */
+	if (Utils::isReadeableFile(fullPath) == false)
+		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o arquivo."));
 	std::string response = Utils::autoHTML("200", "OK", fullPath);
 	write(_connectSocket, response.c_str(), response.length()); 
 }
 
-/* 
-// Função para processar POST
-void processPost(const std::string &path) {
-    // Suponha que estamos recebendo dados para salvar em um arquivo
-    // Esta parte deve lidar com a leitura do corpo da requisição e salvar o conteúdo no path
-    //std::cout << "Processing POST request, saving data to: " << path << std::endl;
-    // Implementação fictícia para salvar dados
-    // Aqui você colocaria a lógica real para ler o corpo do POST e salvar o conteúdo
-}
-
-// Função para processar DELETE
-void processDelete(const std::string &path) {
-    //std::cout << "Processing DELETE request, deleting data from: " << path << std::endl;
-} */
-
-void serveAutoindex(const std::string &path, int _connectSocket)
+void serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSocket)
 {
-	(void)_connectSocket, (void)path;
-/*     DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir(path.c_str())) != NULL)
-	{
-        std::cout << "Index of " << path << ":\n";
-        while ((ent = readdir(dir)) != NULL)
-            std::cout << ent->d_name << "\n";
-        closedir(dir);
-    }
-	else
-        throw std::runtime_error("500 Unable to open directory"); */
+	DIR *root;
+	dirent *current;
+
+	root = opendir(fullPath.c_str());
+	if (root == NULL)
+		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o diretorio."));
 	
+	if (fullPath.substr(0, rootDir.length()) == rootDir)
+        fullPath.erase(0, rootDir.length());
+	
+	std::string bodyPage = 
+	"<!DOCTYPE html>\n"
+	"<html lang=\"pt-BR\">\n"
+	"\n"
+	"<head>\n"
+	"    <!-- Idioma -->\n"
+	"    <meta charset=\"UTF-8\">\n"
+	"    <!-- Responsividade -->\n"
+	"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\">\n"
+	"    <!-- Defines -->\n"
+	"    <link rel=\"canonical\" href=\"https://www.site1/index.html\" />\n"
+	"    <link rel=\"shortcut icon\" href=\"/favicon.ico\">\n"
+	"    <title>Cliva Website</title>\n"
+	"    <!-- Estilo -->\n"
+	"    <link rel=\"stylesheet\" href=\"styles.css\">\n"
+	"    <!-- Fonts -->\n"
+	"    <link href=\"https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap\" rel=\"stylesheet\">\n"
+	"    <link href=\"https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Major+Mono+Display&display=swap\" rel=\"stylesheet\">\n"
+	"    <link href=\"https://fonts.googleapis.com/css2?family=Foldit:wght@100..900&family=Libre+Barcode+39+Text&display=swap\" rel=\"stylesheet\">\n"
+	"</head>\n"
+	"<body>\n"
+	"    <div class=\"container-top\">\n"
+	"        <header>\n"
+	"            <h2 class=\"site-logo\">Cliva Webserv </h2>\n"
+	"            <h5 class=\"site-slogan\">A única coisa especial aqui é sua avaliação</h5>\n"
+	"            <nav>\n"
+	"                <ul>\n"
+	"                    <li><a href=\"index.html\">Início</a></li>\n"
+	"                    <li><a href=\"tutorial.html\">Tutorial</a></li>\n"
+	"                    <li><a href=\"carregar.html\">Carregar</a></li>\n"
+	"                    <li><a href=\"apagar.html\">Apagar</a></li>\n"
+	"                    <li><a href=\"timestamp.html\">Tempo</a></li>\n"
+	"                </ul>\n"
+	"            </nav>\n"
+	"        </header>\n"
+	"\n"
+	"        <div class=\"main-content\">\n"
+	"            <h3>Autoindex ligado para /" + fullPath + "</h3>\n"
+	"			 <p>Abaixo voce podera acessar os arquivos presentes no diretorio atual apenas com um clique</p>";
+
+	while ((current = readdir(root)) != NULL)
+	{
+		if (current->d_name == std::string(".") || current->d_name == std::string(".."))
+			continue;
+		bodyPage += "			<li><a href='" + fullPath + "/" + std::string(current->d_name) + "'>" + std::string(current->d_name) + "</a></li>";
+	}
+	bodyPage +=
+		"        </div>\n"
+		"\n"
+		"</body>\n"
+		"\n"
+		"</html>";
+	closedir(root);
+	
+	std::string HTMLHeaders = 
+	"HTTP/1.1 200 OK \n"
+	"Date: " + Utils::_getTimeStamp("%a, %d %b %Y %H:%M:%S GMT") + "\n" +
+	"Server: Webserv/1.0.0 (Linux)\n" +
+	"Connection: keep-alive\n" +
+	"Content-Type: text/html; charset=utf-8\n" +
+	"Content-Length: " + Utils::_itoa(bodyPage.size()) + "\n\n";
+
+	std::string HtmlAutoIndexContent = HTMLHeaders + bodyPage;
+
+	write(_connectSocket, HtmlAutoIndexContent.c_str(), HtmlAutoIndexContent.length());
 }
+
 
 bool serveTryFile(const std::string &tryFilePath, int _connectSocket)
 {
@@ -233,10 +274,10 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		std::map<std::string, location_t>::const_iterator curLocation = this->_myServer->getLocations().begin();
 		for (; curLocation != this->_myServer->getLocations().end(); curLocation++)
 		{
-			if (Utils::_isRightLocation(curLocation->first, effectiveUrl))
+			if (Utils::_isRightLocation(curLocation->first, effectiveUrl))//**MELHORAR A VERIFICACAO
 			{
+				std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
 				this->_rightLocation = curLocation;
-				break;
 			}
 		}
 	} 
@@ -248,12 +289,12 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	//VERIFICAR SE O LOCATION TEM REDIRECT OU NOVO ROOT
 	if (this->_rightLocation != this->_myServer->getLocations().end())
 	{
-		//std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
+		std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
 		const location_t &loc = this->_rightLocation->second;
 		if (!loc.redirect.empty())
 		{
 			effectiveUrl = loc.redirect;
-			//std::cout << "REDIRECIONANDO DE: " << url << " PARA: " << effectiveUrl << std::endl;
+			std::cout << "REDIRECIONANDO DE: " << url << " PARA: " << effectiveUrl << std::endl;
 			if (this->_urlLoopCount > 3)
 				throw std::runtime_error(Utils::_defaultErrorPages(508, "Foi detectado um loop de redirecionamentos."));
 			this->_processRequest(effectiveUrl, method, root);
@@ -261,7 +302,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		}
 		if (!loc.root.empty())
 		{
-			//std::cout << "ROTEANDO DE: " << root << " PARA: " << effectiveRoot << std::endl;
+			std::cout << "ROTEANDO DE: " << root << " PARA: " << effectiveRoot << std::endl;
 			effectiveRoot = loc.root;
 		}
 		if (!Utils::isMethodAllowed(loc.methods, method))
@@ -293,11 +334,18 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	{
 		fullPath = effectiveRoot + effectiveUrl;
 	}
+
+/*     if (!fullPath.empty() && fullPath[fullPath.length() - 1] == '/')
+	{
+        fullPath.erase(fullPath.length() - 1); 
+    } */
+
 	std::cout << "FULLPATH: " << fullPath << std::endl;
 //--------------------------------------------------------------------------------------------------- 
 	//EXECUCAO DOS METODOS
     if (method == "GET") //METODO GET
 	{
+        std::cout << "EFETUANDO METODO GET PARA PATH: " << fullPath << std::endl; 
 		if (Utils::isExtensionOf(".py", fullPath))
 		{
 			CGI getCgi(fullPath, "", "", 0);
@@ -306,12 +354,13 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			getCgi.execute();
 			std::string response = Utils::autoHTML("200", "OK","cgi.html");
 			write(this->_connect_fd, response.c_str(), response.length()); 
+			return;
 		}
 			
 		//VERIFICAR SE O ARQUIVO EH SCRIPT
-        //std::cout << "EFETUANDO METODO GET PARA PATH: " << fullPath << std::endl; 
         if (Utils::directoryExists(fullPath))
 		{
+			std::cout << "PATH: " << fullPath << " EH UM DIR!\n";
 			//GET PARA DIRETORIO
 			if (this->_rightLocation != this->_myServer->getLocations().end() && !this->_rightLocation->second.tryFile.empty() && serveTryFile((effectiveRoot + this->_rightLocation->second.tryFile), this->getConnectFd())) //guardar o location no objeto e verificar se há um location
 			{
@@ -320,7 +369,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			else if (this->_rightLocation != this->_myServer->getLocations().end() && this->_rightLocation->second.autoindex)
 			{
 				//std::cout << "TENTANDO AUTOINDEX EM: " << this->_rightLocation->second.autoindex << std::endl;
-                serveAutoindex(fullPath, this->getConnectFd());
+                serveAutoindex(fullPath, effectiveRoot, this->getConnectFd());
             }
             else if (Utils::fileExists(fullPath + "index.html"))
 			{
@@ -363,11 +412,11 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			std::string response = Utils::autoHTML("200", "OK", "");
 			write(this->_connect_fd, response.c_str(), response.length());
 		}
-		else //SE A REMOÇÃO DO ARQUIVO FALHAR 
+/* 		else //SE A REMOÇÃO DO ARQUIVO FALHAR 
 		{
 			std::string response = Utils::autoHTML("400", "OK", "");
 			write(this->_connect_fd, response.c_str(), response.length());
-		}
+		} */
 	}//------------------------------------------------------------------------------------------------------------
 	else
 	{
