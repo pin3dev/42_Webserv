@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 17:51:59 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/08 22:15:37 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 16:11:51 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ WebServ::WebServ(std::vector<Server> servers) : _polling(), _vServers(servers), 
 }
 WebServ::~WebServ()
 {
-	this->_vServers.clear();
+	this->_vServers.clear();//**FAZER VERFICACAO E LIMPEZA DE SOCKETS NO VETOR
 	this->_polling.clear();
 	this->_connects.clear();
 }
@@ -55,7 +55,7 @@ void WebServ::runWebServ()
 		_cleaningPolling();
 	}
 }
-//** TRANSFORMAR FUNÇÃO EM MULTIPLEXING
+
 void WebServ::_verifyPolling()
 {
 	for (size_t i = 0; i < this->_polling.size(); i++)
@@ -122,12 +122,6 @@ std::vector<pollfd> &WebServ::getVecPolling(){return (this->_polling);}
 */
 
 
-/** 
- * **************************
- * SECTION - CHECKERS
- * **************************
-*/
-
 void WebServ::signalHandler(int signum)
 {
 	if (signum == SIGINT)
@@ -155,56 +149,5 @@ void WebServ::_countAndCheckVirtualServers()
 		throw std::runtime_error("Nenhum servidor default foi definido!");
 }
 
-/** 
- * **************************
- * SECTION - TO DEBUG AND DELETE LATERS
- * **************************
-*/
 
 
-void WebServ::debugMsg(std::string msg)
-{
-	std::cout << msg;
-}
-
-void WebServ::printServerVec()
-{
-	std::vector<Server>::iterator it = this->_vServers.begin();
-	for (; it != this->_vServers.end(); it++)
-	{
-		std::cout << (*it) << std::endl;
-	}
-} 
-void WebServ::printPollingVec(std::string status)
-{
-	std::vector<pollfd>::iterator it = this->_polling.begin();
-	for (; it != this->_polling.end(); it++)
-	{
-		std::cout << "------------------\n";
-		std::cout << "STRUCT POLLING ";
-		std::cout << status << std::endl;;
-		std::cout << "------------------\n";
-		std::cout << "- fd: " << it->fd << std::endl;
-		std::cout << "- events: ";
-		if (it->events & POLLIN)
-			std::cout << "POLLIN";
-		if (it->events & POLLOUT)
-			std::cout << " POLLOUT\n";
-		if (it->events == 0)
-			std::cout << "NO EVENTS\n";
-		std::cout << "\n- revents: ";
-		if (it->revents & POLLIN)
-			std::cout << "POLLIN\n";
-		if (it->revents & POLLOUT)
-			std::cout << " POLLOUT\n";
-		if (it->revents & POLLERR)
-			std::cout << " POLLERR\n";
-		if (it->revents & POLLHUP)
-			std::cout << " POLLHUP\n";
-		if (it->revents & POLLNVAL)
-			std::cout << " POLLNVAL\n";
-		if (!it->revents)
-			std::cout << "NO REVENTS\n";
-		std::cout << "------------------\n";
-	}
-} 

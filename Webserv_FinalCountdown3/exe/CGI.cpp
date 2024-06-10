@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:22:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/08 21:39:41 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 20:54:14 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	CGI::_setOutFile()
 		throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema no CGI::_setOutFile()"));
 }
 
-
+/* 
 ssize_t write_all(int fd, const void* buf, size_t count)
 {
     size_t bytes_left = count;
@@ -97,7 +97,7 @@ ssize_t write_all(int fd, const void* buf, size_t count)
         buffer += bytes_written;
     }
     return count;
-}
+} */
 //**FIQUEI SEM ENTENDER SE ISSO EH CHAMADO 2 VEZES PARA IMG
 void	CGI::_writeRequestToCGI()
 {

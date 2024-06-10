@@ -43,24 +43,33 @@
 
         <div class="main-content">
             <article class="blog-post">
-                <h3>Teste nosso Webserv</h3>
                 <p>Abaixo você encontrará alguns comandos de terminal que vão te ajudar a expandir os testes para nosso webserv.</p>
+                
+                <h3>1. Funcionamento</h3>
 
-                <h5>Teste de blablabla</h5>
-                <p>Use o arquivo de configuração blablalba, e pelo terminal digite:</p>
-                <pre><code>codigo do bash aqui</code></pre>
+                <p>Execute o comando abaixo no terminal, e webserv deve ser capaz de funcionar com um arquivo padrao pre-definido.</p>
+                <pre><code>./webserv</code></pre>
 
-                <h5>Teste de URI too long</h5>
-                <p>No navegador digite:</p>
-                <pre><code>localhost:8080/supercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussuperca
+                <p>Execute o comando abaixo no terminal, para verificar se o servidor esta como nao bloqueante, verifique se os requests foram respondidos.</p>
+                <pre><code>ab -n 1000 -c 100 http://localhost:8080/</code></pre>
+                
+                <p>Execute o comando abaixo no terminal, para verificar se o servidor esta com client bounced, verifique se o 11o cliente foi rejeitado.</p>
+                <pre><code>  </code></pre>
+                
+                <h3>2. Bibliotecas & Funcoes</h3>
+                
+                <p>Pesquise no projeto a funcao abaixo, e verifique se a mesma nao esta sendo usada para rodar outro webserv</p>
+                <pre><code>excve()</code></pre>
+
+                <p>Pesquise no projeto a funcao abaixo, e verifique se a mesma esta sendo chamada apenas uma vez e antes de todas os writes/send ou read/recv.</p>
+                <pre><code>poll()</code></pre>
+                
+                <h3>3. Extras</h3>
+                
+                <h5>URI too long</h5>
+                <p>Copie o link abaixo</p>
+                <pre><code>localhost:8080/supercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocious
                 </code></pre>
-
-                <h5>Teste de blablabla</h5>
-                <p>Use o arquivo de configuração blablalba, e pelo terminal digite:</p>
-                <pre><code>codigo do bash aqui</code></pre>
-
-                <h5>Conclusão</h5>
-                <p>Este guia básico deve ajudar você a testar funcionalidades avançadas do nosso webserv, que apenas pelo navegador não seria possível.</p>
             </article>
         </div>
 

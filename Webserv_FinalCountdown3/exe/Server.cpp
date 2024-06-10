@@ -6,11 +6,12 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:36:13 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/28 11:14:30 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 18:02:46 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <unistd.h>
 
 Server::Server(std::map<std::string, std::string> &settings, std::vector<Server> const &servers, std::map<std::string, location_t> const &locationMap)
 {
@@ -18,7 +19,10 @@ Server::Server(std::map<std::string, std::string> &settings, std::vector<Server>
     this->applyServerSettings(settings, servers, locationMap);
 }
 
-Server::~Server(){}
+Server::~Server()
+{
+   //close (this->socket);
+}
 
 std::string Server::getServerName() const {return this->serverName;}
 std::string Server::getRoot() const {return this->root;}

@@ -6,12 +6,12 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/08 22:17:23 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 16:15:04 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Manager.hpp"
-#include "Utils.hpp" //**TO DEBUG
+#include "Utils.hpp"
 
 /** 
  * **************************
@@ -26,8 +26,7 @@ HEADpollfd(NULL), HEADserver(NULL), HEADconnect(NULL)
 	this->_IDpseudo = 0;
 	this->IDconnect = 0;
 }
-Manager::~Manager()
-{}
+Manager::~Manager(){}
 
 
 /** 
@@ -89,10 +88,7 @@ void Manager::_setNewConnect(int connectSocket)
 {
 	this->HEADconnect->push_back(Connect(*this->REFserver, connectSocket));
 }
-/* void Manager::_rmPollfdOfConnect()
-{
-	this->REFpollfd.fd = -1;
-} */
+
 void Manager::_rmConnect() 
 {
     if (this->getID_C() >= 0 && this->getID_C() < (int)this->HEADconnect->size())
@@ -140,9 +136,7 @@ void Manager::_createConnect()
 
 void Manager::_closeConnect()
 {
-	close(this->getPollSocket()); //**adicionar ao destructor do connect
-
-	//this->_rmPollfdOfConnect();
+	close(this->getPollSocket());
 	this->setSocket(-1);
 	this->_rmConnect();
 }
@@ -151,7 +145,7 @@ void Manager::_closeConnect()
 void Manager::_storeRequest()
 {
 	char	buffer[2048] = {0};
-	int		bytes = recv(this->getPollSocket(), buffer, 2048, 0); //**VER MAIS SOBRE MASCARAS DE FLAGS
+	int		bytes = recv(this->getPollSocket(), buffer, 2048, 0);
 	
 	std::string meubuffer = buffer;
 	std::cout << "REQUEST LIDO: " << meubuffer << std::endl;

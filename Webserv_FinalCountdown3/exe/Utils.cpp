@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 15:11:45 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/09 19:46:59 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 21:05:43 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,7 @@ std::string Utils::_defaultErrorPages(int status, std::string subText)
 	"    <link rel=\"canonical\" href=\"https://www.site1/index.html\" />\n"
 	"    <link rel=\"shortcut icon\" href=\"/favicon.ico\">\n"
 	"    <title>Tutorial</title>\n"
-	"    <link rel=\"stylesheet\" href=\"styles.css\">\n"
+	"    <link rel=\"stylesheet\" href=\"/styles.css\">\n"
 	"    <link href=\"https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Major+Mono+Display&display=swap\" rel=\"stylesheet\">\n"
 	"</head>\n"
 	"<body>\n"

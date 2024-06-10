@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:36:03 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/05 21:24:42 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 16:24:03 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,7 +284,7 @@ void Parser::verifyArguments(int ac, char **av)
     else if(ac == 2)
         this->confPath = av[1];
     else
-        this->confPath = "default.conf";
+        this->confPath = "configs/default.conf";
 }
 
 void Parser::verifyConfFile()

@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 20:42:34 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/08 22:16:47 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 16:12:14 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ Configurator::~Configurator()
 {
     std::memset(&this->_settings, 0, sizeof(this->_settings));
     this->freeTmpAddr();
-    //** 
 }
 
 void Configurator::setSocketToVServer()
@@ -79,7 +78,7 @@ void Configurator::_setPassive()
 	if (listen(this->_server.getSocket(), this->_maxConnections) < 0)
 		throw std::runtime_error("Problema no Configurator::_setPassive()");
 }
-//** 
+
 void Configurator::freeTmpAddr()
 {
     if (this->_tmpAddr)

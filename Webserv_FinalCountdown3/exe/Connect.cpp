@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/09 20:50:57 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/10 21:24:11 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 */
 
 Connect:: Connect(Server &server, int connect_fd) : _connect_fd(connect_fd), _urlLoopCount(0), 
-_myServer(&server), _effectiveUpload(""), _fullPath("")
+_myServer(&server), _fullPath(""), _effectiveUpload("")
 {
     this->_updated = Utils::_nowTime();
 	this->_rightLocation = this->_myServer->getLocations().end();
@@ -66,6 +66,7 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 		write(this->_connect_fd, e.what(), myWhat.size());
 		//**ACHO QUE TENHO QUE FECHAR A CONEX'AO AQUI
 	}
+	this->_urlLoopCount = 0;
 	//this->_myRequest.setReadyToResponse(false);
 /* 	this->_request.clear(); //
 	this->_requestPayload.clear();  */
@@ -166,7 +167,7 @@ void serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSoc
 	"    <link rel=\"shortcut icon\" href=\"/favicon.ico\">\n"
 	"    <title>Cliva Website</title>\n"
 	"    <!-- Estilo -->\n"
-	"    <link rel=\"stylesheet\" href=\"styles.css\">\n"
+	"    <link rel=\"stylesheet\" href=\"/styles.css\">\n"
 	"    <!-- Fonts -->\n"
 	"    <link href=\"https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap\" rel=\"stylesheet\">\n"
 	"    <link href=\"https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Major+Mono+Display&display=swap\" rel=\"stylesheet\">\n"
@@ -179,11 +180,11 @@ void serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSoc
 	"            <h5 class=\"site-slogan\">A única coisa especial aqui é sua avaliação</h5>\n"
 	"            <nav>\n"
 	"                <ul>\n"
-	"                    <li><a href=\"index.html\">Início</a></li>\n"
-	"                    <li><a href=\"tutorial.html\">Tutorial</a></li>\n"
-	"                    <li><a href=\"carregar.html\">Carregar</a></li>\n"
-	"                    <li><a href=\"apagar.html\">Apagar</a></li>\n"
-	"                    <li><a href=\"timestamp.html\">Tempo</a></li>\n"
+	"                    <li><a href=\"/index.html\">Início</a></li>\n"
+	"                    <li><a href=\"/tutorial.html\">Tutorial</a></li>\n"
+	"                    <li><a href=\"/carregar.html\">Carregar</a></li>\n"
+	"                    <li><a href=\"/apagar.html\">Apagar</a></li>\n"
+	"                    <li><a href=\"/timestamp.html\">Tempo</a></li>\n"
 	"                </ul>\n"
 	"            </nav>\n"
 	"        </header>\n"
@@ -196,7 +197,7 @@ void serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSoc
 	{
 		if (current->d_name == std::string(".") || current->d_name == std::string(".."))
 			continue;
-		bodyPage += "			<li><a href='" + fullPath + "/" + std::string(current->d_name) + "'>" + std::string(current->d_name) + "</a></li>";
+		bodyPage += "			<li><a href='/" + fullPath + "/" + std::string(current->d_name) + "'>" + std::string(current->d_name) + "</a></li>";
 	}
 	bodyPage +=
 		"        </div>\n"
@@ -210,7 +211,7 @@ void serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSoc
 	"HTTP/1.1 200 OK \n"
 	"Date: " + Utils::_getTimeStamp("%a, %d %b %Y %H:%M:%S GMT") + "\n" +
 	"Server: Webserv/1.0.0 (Linux)\n" +
-	"Connection: keep-alive\n" +
+	"Connection: close\n" +
 	"Content-Type: text/html; charset=utf-8\n" +
 	"Content-Length: " + Utils::_itoa(bodyPage.size()) + "\n\n";
 
@@ -245,17 +246,9 @@ void Connect::_exportEnviron(CGI &cgi)
 }
 
 
-//VARIAVEIS IMPORTANTES CRIADAS:
-/*
--RIGHTLOCATION
--EFECTIVEROOT 
--EFFECTIVEURL
--FULLPATH
--EFFECTIVECGIPATH
-
-*/
 void Connect::_processRequest(const std::string &url, const std::string &method, const std::string &root)
 {
+
 	//std::cout << "\n\t1\n";
 	this->_urlLoopCount++;
 	//std::cout << "\n\t2\n";
@@ -265,7 +258,12 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	std::string fullPath;
 	//std::map<std::string, location_t>::const_iterator rightLocation = this->_myServer->getLocations().end();
     std::cout << "EFETUANDO: " << method << " REQUEST PARA ROOT: " << effectiveRoot << " E URL: " << effectiveUrl << " NO SOCKET: " << this->getConnectFd() << std::endl;
-	
+    
+    // Remover a barra final se o URL não for a raiz e terminar com '/'
+	//NORMATIZAR OS URL
+	if (effectiveUrl != "/" && effectiveUrl[effectiveUrl.length() - 1] == '/')
+   		effectiveUrl.erase(effectiveUrl.length() - 1);
+
 	//ENCONTRAR LOCATION CERTO
 	if (Utils::_isRoot(effectiveUrl))
 		this->_rightLocation = this->_myServer->getLocations().find("/");
@@ -276,7 +274,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		{
 			if (Utils::_isRightLocation(curLocation->first, effectiveUrl))//**MELHORAR A VERIFICACAO
 			{
-				std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
+				//std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
 				this->_rightLocation = curLocation;
 			}
 		}
@@ -335,10 +333,6 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		fullPath = effectiveRoot + effectiveUrl;
 	}
 
-/*     if (!fullPath.empty() && fullPath[fullPath.length() - 1] == '/')
-	{
-        fullPath.erase(fullPath.length() - 1); 
-    } */
 
 	std::cout << "FULLPATH: " << fullPath << std::endl;
 //--------------------------------------------------------------------------------------------------- 
@@ -370,6 +364,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			{
 				//std::cout << "TENTANDO AUTOINDEX EM: " << this->_rightLocation->second.autoindex << std::endl;
                 serveAutoindex(fullPath, effectiveRoot, this->getConnectFd());
+				return ;
             }
             else if (Utils::fileExists(fullPath + "index.html"))
 			{
@@ -395,6 +390,8 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	{
 		if (this->_rightLocation->second.uploadTo.empty())
 			throw std::runtime_error(Utils::_defaultErrorPages(501, "Nenhum diretorio definido para upload"));
+		//if (this->_myRequest.getHeadData()["User-Agent"].find("curl"))
+			
 		this->_effectiveUpload = effectiveRoot + this->_rightLocation->second.uploadTo;
         //std::cout << "EFETUANDO METODO POST PARA PATH: " << fullPath << std::endl; 
         this->_fullPath = fullPath;
