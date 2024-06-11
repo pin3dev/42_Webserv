@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:05:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/10 16:44:47 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 18:32:23 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ class Connect
 		
 		std::string _fullPath;
 		std::string _effectiveUpload;
+
+		bool	_isRedirect;
 
 		//UTILS
 		void	_setUpdate(time_t now);

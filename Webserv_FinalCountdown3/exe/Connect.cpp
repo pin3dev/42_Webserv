@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/11 17:11:06 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:01:09 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 */
 
 Connect:: Connect(Server &server, int connect_fd) : _connect_fd(connect_fd), _urlLoopCount(0), 
-_myServer(&server), _fullPath(""), _effectiveUpload("")
+_myServer(&server), _fullPath(""), _effectiveUpload(""), _isRedirect(false)
 {
     this->_updated = Utils::_nowTime();
 	this->_rightLocation = this->_myServer->getLocations().end();
@@ -30,7 +30,8 @@ _myServer(&server), _fullPath(""), _effectiveUpload("")
 
 Connect::~Connect()
 {
-	//close(this->_connect_fd);
+	if (Utils::isReadeableFile("cgi.html"))
+		remove("cgi.html");
 }
 
 
@@ -64,12 +65,9 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 	{
 		std::string myWhat = e.what();
 		write(this->_connect_fd, e.what(), myWhat.size());
-		//**ACHO QUE TENHO QUE FECHAR A CONEX'AO AQUI
 	}
 	this->_urlLoopCount = 0;
 	//this->_myRequest.setReadyToResponse(false);
-/* 	this->_request.clear(); //
-	this->_requestPayload.clear();  */
 }
 /** 
  * **************************
@@ -156,7 +154,11 @@ void Connect::_serveFile(const std::string &fullPath, const std::string &effecti
 			return ;
 		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o arquivo."));
 	}
-	std::string response = Utils::autoHTML("200", "OK", fullPath);
+	std::string response;
+	if (this->_isRedirect == true)
+		response = Utils::autoHTML("307", "temporary redirect”", fullPath);
+	else
+		response = Utils::autoHTML("200", "OK", fullPath);
 	write(_connectSocket, response.c_str(), response.length()); 
 }
 
@@ -273,10 +275,7 @@ void Connect::_exportEnviron(CGI &cgi)
 
 void Connect::_processRequest(const std::string &url, const std::string &method, const std::string &root)
 {
-
-	//std::cout << "\n\t1\n";
 	this->_urlLoopCount++;
-	//std::cout << "\n\t2\n";
     std::string effectiveRoot = root; 
     std::string effectiveUrl = url;
 	std::string effectiveCgiPath;
@@ -320,6 +319,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			std::cout << "REDIRECIONANDO DE: " << url << " PARA: " << effectiveUrl << std::endl;
 			if (this->_urlLoopCount > 3)
 				throw std::runtime_error(Utils::_defaultErrorPages(508, "Foi detectado um loop de redirecionamentos."));
+			this->_isRedirect = true;
 			this->_processRequest(effectiveUrl, method, root);
 			return;
 		}
@@ -435,14 +435,14 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		std::string response = Utils::autoHTML("200", "OK","cgi.html");
 		write(this->_connect_fd, response.c_str(), response.length()); 
     }//------------------------------------------------------------------------------------------------------------
-	else if (method == "DELETE") //METODO DELETE
+	else if (method == "DELETE")
 	{
 		if (remove(fullPath.c_str()) == 0)
 		{
 			std::string response = Utils::autoHTML("200", "OK", "");
 			write(this->_connect_fd, response.c_str(), response.length());
 		}
-/* 		else //SE A REMOÇÃO DO ARQUIVO FALHAR 
+/* 		else
 		{
 			std::string response = Utils::autoHTML("400", "OK", "");
 			write(this->_connect_fd, response.c_str(), response.length());

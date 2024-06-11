@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 17:52:33 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/05/27 20:00:37 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 18:17:48 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ class WebServ
 		void _runPolling();
 		void _verifyPolling();
 		void _cleaningPolling();
+		void _cleanWebserv();
+
 
 	//UTILS
 		bool __isValidFD(int fd); //**COLOCAR NO UTILS

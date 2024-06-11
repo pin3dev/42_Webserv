@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 17:51:59 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/10 16:11:51 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 18:19:25 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ WebServ::WebServ(std::vector<Server> servers) : _polling(), _vServers(servers), 
 }
 WebServ::~WebServ()
 {
+	this->_cleanWebserv();
 	this->_vServers.clear();//**FAZER VERFICACAO E LIMPEZA DE SOCKETS NO VETOR
 	this->_polling.clear();
 	this->_connects.clear();
@@ -149,5 +150,14 @@ void WebServ::_countAndCheckVirtualServers()
 		throw std::runtime_error("Nenhum servidor default foi definido!");
 }
 
+void WebServ::_cleanWebserv()
+{
+	std::vector<pollfd>::iterator it = this->_polling.begin();
+	for (; it != this->_polling.end(); it++)
+	{
+		if (it->fd > 0)
+			close (it->fd);
+	}
+}
 
 
