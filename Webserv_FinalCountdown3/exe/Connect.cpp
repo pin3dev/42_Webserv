@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/11 19:01:09 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:25:45 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -442,11 +442,10 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			std::string response = Utils::autoHTML("200", "OK", "");
 			write(this->_connect_fd, response.c_str(), response.length());
 		}
-/* 		else
+		else
 		{
-			std::string response = Utils::autoHTML("400", "OK", "");
-			write(this->_connect_fd, response.c_str(), response.length());
-		} */
+			throw std::runtime_error(Utils::_defaultErrorPages(400, "O arquivo nao foi encontrado no diretorio /upload."));
+		}
 	}//------------------------------------------------------------------------------------------------------------
 	else
 	{

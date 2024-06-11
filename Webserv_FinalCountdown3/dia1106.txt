@@ -4,7 +4,7 @@ X verificar user-agent de curl e passar payload para ser executado
 X substituir a resposta direta do cgi para o servefile
 X verificar saida do cgi
 X apagar arquivo cgi apos utilizacao
-~ gerar resposta para delete nao executado
+O gerar resposta para delete nao executado
 X fechar sockets dos servidores na classe webserv
 X implementar status de redirecionamento
 - leaks
