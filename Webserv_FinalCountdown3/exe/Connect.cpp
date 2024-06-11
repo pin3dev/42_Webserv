@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:04:31 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/10 21:24:11 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 17:11:06 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,22 @@ void Connect::_searchForNonDefaultServer(std::vector<Server> &VecServers)
 //------------------------------------------------------------------------------------------------------------
 
 
-void serveFile(const std::string &fullPath, int _connectSocket)
+bool Connect::_tryServeErrorPage(const std::string &effectiveRoot)
+{
+	if (this->_myServer->getErrorPage().empty())
+		return false;
+	std::string fullErrorPath = effectiveRoot + this->_myServer->getErrorPage();
+	std::cout << "ERROR PAGE: " << fullErrorPath << std::endl;
+	if (Utils::isReadeableFile(fullErrorPath))
+	{
+		std::string response = Utils::autoHTML("404", "Not Found", fullErrorPath);
+		write(this->_connect_fd, response.c_str(), response.length());
+		return true;
+	}
+	return false;
+}
+
+void Connect::_serveFile(const std::string &fullPath, const std::string &effectiveRoot, int _connectSocket)
 {
 /*	std::ifstream file(fullPath.c_str(), std::ios::binary | std::ios::in);
 
@@ -136,22 +151,30 @@ void serveFile(const std::string &fullPath, int _connectSocket)
 		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o arquivo."));
 	file.close(); */
 	if (Utils::isReadeableFile(fullPath) == false)
+	{
+		if (this->_tryServeErrorPage(effectiveRoot))
+			return ;
 		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o arquivo."));
+	}
 	std::string response = Utils::autoHTML("200", "OK", fullPath);
 	write(_connectSocket, response.c_str(), response.length()); 
 }
 
-void serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSocket)
+void Connect::_serveAutoindex(std::string &fullPath, std::string &effectiveRoot, int _connectSocket)
 {
 	DIR *root;
 	dirent *current;
 
 	root = opendir(fullPath.c_str());
 	if (root == NULL)
+	{
+		if (this->_tryServeErrorPage(effectiveRoot))
+			return ;
 		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o diretorio."));
+	}
 	
-	if (fullPath.substr(0, rootDir.length()) == rootDir)
-        fullPath.erase(0, rootDir.length());
+	if (fullPath.substr(0, effectiveRoot.length()) == effectiveRoot)
+        fullPath.erase(0, effectiveRoot.length());
 	
 	std::string bodyPage = 
 	"<!DOCTYPE html>\n"
@@ -221,11 +244,11 @@ void serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSoc
 }
 
 
-bool serveTryFile(const std::string &tryFilePath, int _connectSocket)
+bool Connect::_serveTryFile(const std::string &tryFilePath, const std::string &effectiveRoot, int _connectSocket)
 {
     if (Utils::fileExists(tryFilePath))
 	{
-        serveFile(tryFilePath, _connectSocket);
+        this->_serveFile(tryFilePath, effectiveRoot, _connectSocket);
         return true;
     }
     return false;
@@ -243,6 +266,8 @@ void Connect::_exportEnviron(CGI &cgi)
 	cgi.setNewEnv("CONTENT_LENGHT", this->_myRequest.getHeadData()["Content-Length"]);
 	cgi.setNewEnv("UPLOAD_PATH", this->_effectiveUpload);
 	cgi.setNewEnv("USER_AGENT" ,this->_myRequest.getHeadData()["User-Agent"]);
+	//if (this->_myRequest.getHeadData()["User-Agent"].find("curl"))
+		cgi.setNewEnv("PAYLOAD", this->_myRequest.getPayload());
 }
 
 
@@ -337,11 +362,17 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	std::cout << "FULLPATH: " << fullPath << std::endl;
 //--------------------------------------------------------------------------------------------------- 
 	//EXECUCAO DOS METODOS
-    if (method == "GET") //METODO GET
+    if (method == "GET")
 	{
         std::cout << "EFETUANDO METODO GET PARA PATH: " << fullPath << std::endl; 
 		if (Utils::isExtensionOf(".py", fullPath))
 		{
+			if (!Utils::fileExists(fullPath))
+			{
+				if (this->_tryServeErrorPage(effectiveRoot))
+					return;
+				throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o diretorio."));
+			}
 			CGI getCgi(fullPath, "", "", 0);
 			this->_effectiveUpload = Utils::_getTimeStamp("%H:%M:%S");
 			this->_exportEnviron(getCgi);
@@ -350,25 +381,23 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			write(this->_connect_fd, response.c_str(), response.length()); 
 			return;
 		}
-			
-		//VERIFICAR SE O ARQUIVO EH SCRIPT
-        if (Utils::directoryExists(fullPath))
+		if (Utils::directoryExists(fullPath))
 		{
 			std::cout << "PATH: " << fullPath << " EH UM DIR!\n";
 			//GET PARA DIRETORIO
-			if (this->_rightLocation != this->_myServer->getLocations().end() && !this->_rightLocation->second.tryFile.empty() && serveTryFile((effectiveRoot + this->_rightLocation->second.tryFile), this->getConnectFd())) //guardar o location no objeto e verificar se há um location
+			if (this->_rightLocation != this->_myServer->getLocations().end() && !this->_rightLocation->second.tryFile.empty() && this->_serveTryFile((effectiveRoot + this->_rightLocation->second.tryFile), effectiveRoot, this->getConnectFd())) //guardar o location no objeto e verificar se há um location
 			{
                 return;
             }
 			else if (this->_rightLocation != this->_myServer->getLocations().end() && this->_rightLocation->second.autoindex)
 			{
 				//std::cout << "TENTANDO AUTOINDEX EM: " << this->_rightLocation->second.autoindex << std::endl;
-                serveAutoindex(fullPath, effectiveRoot, this->getConnectFd());
+                this->_serveAutoindex(fullPath, effectiveRoot, this->getConnectFd());
 				return ;
             }
             else if (Utils::fileExists(fullPath + "index.html"))
 			{
-                serveFile((fullPath + "index.html"), this->getConnectFd());
+                this->_serveFile((fullPath + "index.html"), effectiveRoot, this->getConnectFd());
             }
 			else
 			{
@@ -377,12 +406,12 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
         }
 		else if (Utils::fileExists(fullPath))
 		{
-			//GET PARA FILE
-			//verifica se eh um script e executa o script
-            serveFile(fullPath, this->getConnectFd());
+            this->_serveFile(fullPath, effectiveRoot, this->getConnectFd());
         }
 		else
 		{
+			if (this->_tryServeErrorPage(effectiveRoot))
+				return ;
             throw std::runtime_error(Utils::_defaultErrorPages(404, "O diretorio ou arquivo nao foi encontrado."));
         }
     }//------------------------------------------------------------------------------------------------------------
@@ -390,8 +419,12 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	{
 		if (this->_rightLocation->second.uploadTo.empty())
 			throw std::runtime_error(Utils::_defaultErrorPages(501, "Nenhum diretorio definido para upload"));
-		//if (this->_myRequest.getHeadData()["User-Agent"].find("curl"))
-			
+		if (!Utils::fileExists(fullPath))
+		{
+			if (this->_tryServeErrorPage(effectiveRoot))
+				return;
+			throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o diretorio."));
+		}
 		this->_effectiveUpload = effectiveRoot + this->_rightLocation->second.uploadTo;
         //std::cout << "EFETUANDO METODO POST PARA PATH: " << fullPath << std::endl; 
         this->_fullPath = fullPath;

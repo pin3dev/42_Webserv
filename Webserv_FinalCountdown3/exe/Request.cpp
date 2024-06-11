@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 19:10:47 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/10 17:55:42 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 17:25:43 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,8 +168,14 @@ void    Request::_setPayload(std::stringstream &ss)
         this->setFirstRead(false);
         return ;
     }
-	this->_payload.resize(this->getBodyLength()); 
-	binarySs.read(&this->_payload[0], this->getBodyLength());
+    if (this->_headerData["Content-Type"] == "plain/text")
+        this->_payload.assign(tempPayload.begin(), tempPayload.end());
+	else
+    {
+        this->_payload.resize(this->getBodyLength()); 
+        binarySs.read(&this->_payload[0], this->getBodyLength());
+    }
+    std::cout << "PAYLOAD DEPOIS DE GUARDADO: " << this->_payload << std::endl;
 }
 
 void    Request::_setBodyLength()

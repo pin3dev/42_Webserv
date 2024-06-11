@@ -6,7 +6,7 @@
 /*   By: pin3dev <pinedev@outlook.com>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:22:17 by pin3dev           #+#    #+#             */
-/*   Updated: 2024/06/10 20:54:14 by pin3dev          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:37:56 by pin3dev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,17 @@ _uploadTo(uploadTo), _request(request), _requestLength(requestLength), _environ(
 CGI::~CGI()
 {
 	std::cout << "STATUS DE OPERACAO: " <<  this->_status << std::endl;
+}
+
+void _handle_timeout(pid_t pid)
+{
+    kill(pid, SIGKILL);  // Envia sinal para matar o processo filho
+}
+
+bool _hasTimeOut(time_t start_time)
+{
+	const int timeout = 1;
+	return (Utils::_nowTime() - start_time > timeout);
 }
 
 void CGI::_exportEnvPath()
@@ -74,7 +85,25 @@ void CGI::setNewEnv(std::string key, std::string value)
 	{
 		close(this->_pipefd[READ_END]);
 		close(this->_outFile);
-		waitpid(pid, &(this->_status), 0);
+		//waitpid(pid, &(this->_status), 0);
+ 		time_t start_time = Utils::_nowTime();
+		while (true)
+		{
+			pid_t result = waitpid(pid, &(this->_status), WNOHANG);
+			if (result < 0) //erro na execve
+				throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema na execve do arquivo CGI."));
+			else if (result == 0)
+			{
+				if (_hasTimeOut(start_time))
+				{
+					_handle_timeout(pid);
+					throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema de loop com o arquivo CGI."));
+					break;
+				}
+			}
+			else
+				break;
+		}
 	}
 }
 void	CGI::_setOutFile()
@@ -98,7 +127,7 @@ ssize_t write_all(int fd, const void* buf, size_t count)
     }
     return count;
 } */
-//**FIQUEI SEM ENTENDER SE ISSO EH CHAMADO 2 VEZES PARA IMG
+
 void	CGI::_writeRequestToCGI()
 {
 	if (pipe(this->_pipefd) == -1)
@@ -124,7 +153,6 @@ void	CGI::_runCGIandWriteHTML()
 	close(this->_outFile);
 
 	std::string python3 = "/usr/bin/python3";
-
 
 	if (execve(python3.c_str(), &(this->_args[0]), &(this->_environ[0])) == -1)
 		throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema no CGI::_runCGIandWriteHTML()"));
@@ -214,3 +242,23 @@ void	CGI::_executeBin(int &file, int (&fd)[2])
 		throw std::runtime_error("500 Internal Server Error");
 }
  */
+
+/* 		time_t start_time = Utils::_nowTime();
+		while (true)
+		{
+			pid_t result = waitpid(pid, &(this->_status), 0);
+			if (result < 0) //erro na execve
+				throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema na execve do arquivo CGI."));
+			else if (result == 0)
+			{
+				if (_hasTimeOut(start_time))
+				{
+					_handle_timeout(pid);
+					throw std::runtime_error(Utils::_defaultErrorPages(500, "Problema de loop com o arquivo CGI."));
+					break;
+				}
+			}
+			else
+				break;
+		}
+	} */

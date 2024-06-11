@@ -67,6 +67,7 @@ class CGI
 
         void	_setPipeAndFile(int &file, int (&fd)[2]);
         void	_executeBin(int &file, int (&fd)[2]);
+        //void    _handle_timeout(pid_t pid)
 
     public:
         CGI(std::string fullPath, std::string uploadTo, std::string request, size_t requestLength);
@@ -75,5 +76,6 @@ class CGI
         void	_run();
         void setNewEnv(std::string key, std::string value);
         void execute();
+
 };
 

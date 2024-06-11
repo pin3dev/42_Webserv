@@ -46,7 +46,13 @@ class Connect
 		void 	_processRequest(const std::string &url, const std::string &method, const std::string &root);
 		void    _exportEnviron(CGI &cgi);
 		void	_defaultErrorPages(int status, std::string subText);
-		void 	_initErrorMap();
+
+		void	_serveFile(const std::string &fullPath, const std::string &effectiveRoot, int _connectSocket);
+		void	_serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSocket);
+		bool	_serveTryFile(const std::string &tryFilePath, const std::string &effectiveRoot, int _connectSocket);
+		bool	_tryServeErrorPage(const std::string &effectiveRoot);
+
+
 
 		
 	public:
