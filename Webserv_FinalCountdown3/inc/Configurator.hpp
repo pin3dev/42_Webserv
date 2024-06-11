@@ -12,23 +12,20 @@
 
 #pragma once
 
-//GENERAL INCLUDES
 #include <stdexcept> //std::runtime_error
 
-//ESPECIFIC INCLUDES
 #include <sys/types.h> //socket(), bind(), listen(), accept(), setsockopt()
 #include <sys/socket.h> //socket(), bind(), listen(), accept(), setsockopt()
 #include <netdb.h> //addrinfo struct, getaddrinfo(), freeaddrinfo()
 #include <cstring> //memset()
-#include <unistd.h> //close() // ** TESTAR - SUBSTITUIR?
+#include <unistd.h> //close() 
 #include "Server.hpp"
 
-//CUSTOM INCLUDES
 class Configurator
 {
     private:
         const static int    _maxConnections;
-        struct addrinfo     _settings; //** 
+        struct addrinfo     _settings; 
         struct addrinfo*    _tmpAddr;
         Server&             _server;
 

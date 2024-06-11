@@ -23,15 +23,15 @@ int  WebServ::_DSAmount = 0;
 
 WebServ::WebServ(std::vector<Server> servers) : _polling(), _vServers(servers), _connects()
 {
-	std::signal(SIGPIPE, SIG_IGN); //CONFIGURAÇÃO PARA IGNORAR SIGPIPE (PIPE QUEBRADO OU SOCKET FECHADO PELO SERVER)
-	std::signal(SIGINT, signalHandler); //CONFIGURA SINAL PARA CTRL+C
+	std::signal(SIGPIPE, SIG_IGN); 
+	std::signal(SIGINT, signalHandler); 
 	_countAndCheckVirtualServers();
 	_configVirtualServers();
 }
 WebServ::~WebServ()
 {
 	this->_cleanWebserv();
-	this->_vServers.clear();//**FAZER VERFICACAO E LIMPEZA DE SOCKETS NO VETOR
+	this->_vServers.clear();
 	this->_polling.clear();
 	this->_connects.clear();
 }
@@ -121,7 +121,6 @@ std::vector<pollfd> &WebServ::getVecPolling(){return (this->_polling);}
  * SECTION - UTILS METHODS
  * **************************
 */
-
 
 void WebServ::signalHandler(int signum)
 {

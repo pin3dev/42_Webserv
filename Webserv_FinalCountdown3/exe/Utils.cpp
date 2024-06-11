@@ -81,7 +81,6 @@ std::string Utils::_decoder(const std::string &url)
     return tmp;
 }
 
-
 bool Utils::_isAt(const std::string &str, const std::string arr[3])
 {
     for (int i = 0; i < 3; ++i)
@@ -99,7 +98,6 @@ bool	Utils::isExtensionOf(std::string const &ext, std::string const &fullname)
 	std::string tmp = fullname.substr((fullname.length() - ext.length()));
 	return (tmp == ext);
 }
-
 
 bool Utils::isParentDirOf(const std::string& parent, const std::string& son)
 {
@@ -145,7 +143,7 @@ bool  Utils::_isRoot(std::string const &url)
 {
 	if (url.size() == 1 && url[0] == '/')
 		return true;
-	if (Utils::_isRootFile(url) && !Utils::isExtensionOf(".py", url)) //**MELHORAR ESSA EXTENSÃO PARA SER FORNECIDA PELO PROGRAMA
+	if (Utils::_isRootFile(url) && !Utils::isExtensionOf(".py", url)) 
 		return true;
 	return false;
 }
@@ -155,11 +153,10 @@ bool Utils::directoryExists(std::string const &fullpath)
 	struct stat info;
 
 	if (stat(fullpath.c_str(), &info) != 0)
-		return (/* (std::cout << "O ARQUIVO: " << fullpath << " NÃO É UM DIRETORIO!\n"), */ false);
+		return (false);
 	else if (info.st_mode & S_IFDIR) 
-		return (/* (std::cout << "O ARQUIVO: " << fullpath << " É UM DIRETORIO!\n"), */ true);
-	return (/* (std::cout << "O ARQUIVO: " << fullpath << " NÃO É UM DIRETORIO!\n"), */ false);
-
+		return (true);
+	return (false);
 }
 
 bool Utils::fileExists(std::string const &fullpath)
@@ -167,10 +164,10 @@ bool Utils::fileExists(std::string const &fullpath)
 	struct stat info;
 
 	if (stat(fullpath.c_str(), &info) != 0)
-		return (/* (std::cout << "O CAMINHO: " << fullpath << " NÃO É UM ARQUIVO!\n"), */ false);
+		return (false);
 	else if (info.st_mode & S_IFREG) 
-		return (/* (std::cout << "O CAMINHO: " << fullpath << " É UM ARQUIVO!\n"), */ true);
-	return (/* (std::cout << "O CAMINHO: " << fullpath << " NÃO É UM ARQUIVO!\n"), */ false);
+		return (true);
+	return (false);
 }
 
 bool Utils::isReadeableFile(std::string const &fullpath)
@@ -190,15 +187,8 @@ std::string Utils::_itoa(int n)
 	return ss.str();
 }
 
-
-
 std::string Utils::_defaultErrorPages(int status, std::string subText)
 {
-/* 	if (status == 404)
-	{
-		//verificar se a pagina existe e servir
-		return ;
-	} */
 	std::string statusDescrip = _errorHTML[status];
 
 	std::string BodyPage = 
@@ -236,14 +226,11 @@ std::string Utils::_defaultErrorPages(int status, std::string subText)
 	return (HtmlErrorContent);
 }
 
-
 /** 
  * **************************************
  * SECTION - TO DELETE
  * **************************************
  */
-
-
 
 std::string Utils::getFileType(std::string const &file)
 {
@@ -284,10 +271,9 @@ bool Utils::isMethodAllowed(const std::vector<std::string> &methods, const std::
 {
     bool isAllowed = std::find(methods.begin(), methods.end(), method) != methods.end();
     if (isAllowed)
-       	return (/* (std::cout << "O METODO: " << method << " É PERMITIDO NO LOCATION!\n"), */ true);
-    return (/* (std::cout << "O METODO: " << method << " NÃO É PERMITIDO NO LOCATION!\n"), */ false);
+       	return (true);
+    return (false);
 }
-
 
 bool	Utils::_isRightLocation(std::string locName, std::string &url)
 {
@@ -306,7 +292,6 @@ bool	Utils::_isRightLocation(std::string locName, std::string &url)
 	return false;
 }
 
-
 std::string Utils::autoHTML(std::string const &status, std::string const &statusDescrip, std::string const &fullPath)
 {
 	std::string fileContent = Utils::getFileContent(fullPath);
@@ -323,8 +308,7 @@ std::string Utils::autoHTML(std::string const &status, std::string const &status
 	return (response + fileContent);
 }
 
-
-void Utils::print_invisibles(const std::string& text)
+/* void Utils::print_invisibles(const std::string& text)
 {
     for (std::string::const_iterator it = text.begin(); it != text.end(); ++it)
 	{
@@ -360,4 +344,4 @@ void Utils::print_invisibles(const std::string& text)
         }
     }
     std::cout << "$" << std::endl; // Print $ at the end of the text
-}
+} */

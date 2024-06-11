@@ -28,13 +28,11 @@ HEADpollfd(NULL), HEADserver(NULL), HEADconnect(NULL)
 }
 Manager::~Manager(){}
 
-
 /** 
  * **************************
  * SECTION - SETTERS
  * **************************
 */
-
 
 void Manager::setType(int DSAmount, int IDpollfd)
 {
@@ -111,14 +109,14 @@ void  Manager::runManager()
 		else if (this->getType() == "CONNECT")
 			this->_storeRequest();
 	}
-	if (this->getPollMode() & POLLOUT)
+	else if (this->getPollMode() & POLLOUT)
 	{
 		if (this->getType() == "CONNECT")
 			this->_askToresponse();
 	}
-	if (this->getPollMode() & (POLLERR | POLLHUP | POLLNVAL))
+	else if (this->getPollMode() & (POLLERR | POLLHUP | POLLNVAL))
 	{
-		_closeConnect(); //**ADICIONAR UM TRATAMENTO DE ERRO ESPECIFICO QUE DEPOIS CHAME POR CLOSECONNECT
+		_closeConnect();
 	}
 }
 
@@ -141,14 +139,11 @@ void Manager::_closeConnect()
 	this->_rmConnect();
 }
 
-
 void Manager::_storeRequest()
 {
 	char	buffer[2048] = {0};
 	int		bytes = recv(this->getPollSocket(), buffer, 2048, 0);
 	
-	std::string meubuffer = buffer;
-	std::cout << "REQUEST LIDO: " << meubuffer << std::endl;
 	if (bytes > 0)
 		this->REFconnect->appendToRequest(buffer, bytes);
 	else
@@ -157,10 +152,8 @@ void Manager::_storeRequest()
 
 void Manager::_askToresponse()
 {
-	std::cout << "TENTANDO RESPONDER...\n";
 	if (this->REFconnect->isExpired())
 	{
-		std::cout << "TIMEOUT\n";
 		this->_closeConnect();
 		return;
 	}
@@ -169,19 +162,16 @@ void Manager::_askToresponse()
 	this->REFconnect->runRequest(*this->HEADserver);
 	if (!this->REFconnect->getRequest().getFlagToResponse())
 	{
-		std::cout << "TENTEI ARMAZENAR MAS VAI TER QUE TENTAR DE NOVO\n";
 		return;
 	}
 	this->_closeConnect();
 }
-
 
 /** 
  * **************************
  * SECTION - GETTERS & SETTERS
  * **************************
 */
-
 
 std::string Manager::getType() const {return this->_type;}
 int Manager::getID_C() const {return (this->IDconnect);}

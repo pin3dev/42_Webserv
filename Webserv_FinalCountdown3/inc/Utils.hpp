@@ -52,11 +52,8 @@ class Utils
         static std::string generateResponseOK(std::string const &path);
         static std::string getFileContent(std::string const &path);
         static std::string getFileType(std::string const &file);
-        //static bool _isNotEmpty(std::string &var);
         static std::string autoHTML(std::string const &status, std::string const &statusDescrip, std::string const &fullPath);
         static bool isMethodAllowed(const std::vector<std::string> &methods, const std::string &method);
         static bool	_isRightLocation(std::string locName, std::string &url);
         static bool isReadeableFile(std::string const &fullpath);
-
-
 };

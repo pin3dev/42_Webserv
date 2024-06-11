@@ -51,6 +51,4 @@ class Parser
         ~Parser();
         std::vector<Server> startParsing();
 
-        void printSettings() const; // DEBBUG
-        void printLocations(std::map<std::string, location_t> locationMap) const; // DEBBUG
 };

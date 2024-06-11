@@ -14,11 +14,6 @@
 #include "Server.hpp"
 #include "WebServ.hpp"
 
-/**TODO
- * Manager.cpp - Implementar mensagem geral de erro de POLLING
- * Connect.cpp - Verificar o tempo de expired como 60s, se é suficiente
-*/
-
 int main(int ac, char **av)
 {
         try

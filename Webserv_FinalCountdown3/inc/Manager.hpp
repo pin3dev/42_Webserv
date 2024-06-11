@@ -12,16 +12,13 @@
 
 #pragma once
 
-//GENERAL INCLUDES
 #include <iostream>
 #include <string>
 #include <poll.h> //pollfd
-//ESPECIFIC INCLUDES
 #include <sys/types.h> //socket(), bind(), listen(), accept(), setsockopt()
 #include <sys/socket.h> //socket(), bind(), listen(), accept(), setsockopt()
 #include <fcntl.h> //fcntl()
 #include <unistd.h> //close(), write(), read(), fork(), execve(), dup2(), pipe()
-//CUSTOM INCLUDES
 #include "Server.hpp"
 #include "Connect.hpp"
 

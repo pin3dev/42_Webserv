@@ -34,8 +34,6 @@ Connect::~Connect()
 		remove("cgi.html");
 }
 
-
-
 /** 
  * **************************
  * SECTION - PUBLIC METHODS
@@ -50,7 +48,6 @@ void	Connect::appendToRequest(char const *buffer, size_t size)
 
 void	Connect::runRequest(std::vector<Server> &VecServers)
 {
-	std::cout << "RESPONDENDO REQUEST...\n";
     this->_setUpdate(Utils::_nowTime()); 
 	try
 	{
@@ -59,7 +56,6 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 			return ;
 		this->_searchForNonDefaultServer(VecServers);
 		this->_processRequest(this->getRequest().getURL(), this->getRequest().getMethod(), this->getServer().getRoot()); 
-		std::cout << "REQUEST RESPONDIDO...\n";
 	}
 	catch(const std::exception& e)
 	{
@@ -67,14 +63,13 @@ void	Connect::runRequest(std::vector<Server> &VecServers)
 		write(this->_connect_fd, e.what(), myWhat.size());
 	}
 	this->_urlLoopCount = 0;
-	//this->_myRequest.setReadyToResponse(false);
 }
+
 /** 
  * **************************
  * SECTION - GETTERS & SETTERS
  * **************************
 */
-
 
 int		Connect::getConnectFd() const {return (this->_connect_fd);}
 Request	&Connect::getRequest(){return (this->_myRequest);}
@@ -88,20 +83,17 @@ bool	Connect::isExpired()
 	return (isExpired);
 }
 
-
 void	Connect::setServer(Server *server)
 {
 	this->_myServer = server;
 	this->_myRequest.setMaxLength(_myServer->getClientMaxBodySize());
 }
 
-
 /** 
  * **************************
  * SECTION - PRIVATE METHODS
  * **************************
 */
-
 
 void Connect::_searchForNonDefaultServer(std::vector<Server> &VecServers)
 {	
@@ -116,22 +108,16 @@ void Connect::_searchForNonDefaultServer(std::vector<Server> &VecServers)
 		if (requestHost == server->getServerName() && server->getHost() == this->getServer().getHost())
 		{
 			this->setServer(&(*server));
-			//this->_myRequest.setReadyToResponse(false);
 			break;
 		}	
 	}
 }
-
-
-//------------------------------------------------------------------------------------------------------------
-
 
 bool Connect::_tryServeErrorPage(const std::string &effectiveRoot)
 {
 	if (this->_myServer->getErrorPage().empty())
 		return false;
 	std::string fullErrorPath = effectiveRoot + this->_myServer->getErrorPage();
-	std::cout << "ERROR PAGE: " << fullErrorPath << std::endl;
 	if (Utils::isReadeableFile(fullErrorPath))
 	{
 		std::string response = Utils::autoHTML("404", "Not Found", fullErrorPath);
@@ -143,11 +129,6 @@ bool Connect::_tryServeErrorPage(const std::string &effectiveRoot)
 
 void Connect::_serveFile(const std::string &fullPath, const std::string &effectiveRoot, int _connectSocket)
 {
-/*	std::ifstream file(fullPath.c_str(), std::ios::binary | std::ios::in);
-
- 	if (!file.is_open())
-		throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o arquivo."));
-	file.close(); */
 	if (Utils::isReadeableFile(fullPath) == false)
 	{
 		if (this->_tryServeErrorPage(effectiveRoot))
@@ -268,8 +249,7 @@ void Connect::_exportEnviron(CGI &cgi)
 	cgi.setNewEnv("CONTENT_LENGHT", this->_myRequest.getHeadData()["Content-Length"]);
 	cgi.setNewEnv("UPLOAD_PATH", this->_effectiveUpload);
 	cgi.setNewEnv("USER_AGENT" ,this->_myRequest.getHeadData()["User-Agent"]);
-	//if (this->_myRequest.getHeadData()["User-Agent"].find("curl"))
-		cgi.setNewEnv("PAYLOAD", this->_myRequest.getPayload());
+	cgi.setNewEnv("PAYLOAD", this->_myRequest.getPayload());
 }
 
 
@@ -280,15 +260,10 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
     std::string effectiveUrl = url;
 	std::string effectiveCgiPath;
 	std::string fullPath;
-	//std::map<std::string, location_t>::const_iterator rightLocation = this->_myServer->getLocations().end();
-    std::cout << "EFETUANDO: " << method << " REQUEST PARA ROOT: " << effectiveRoot << " E URL: " << effectiveUrl << " NO SOCKET: " << this->getConnectFd() << std::endl;
     
-    // Remover a barra final se o URL não for a raiz e terminar com '/'
-	//NORMATIZAR OS URL
 	if (effectiveUrl != "/" && effectiveUrl[effectiveUrl.length() - 1] == '/')
    		effectiveUrl.erase(effectiveUrl.length() - 1);
 
-	//ENCONTRAR LOCATION CERTO
 	if (Utils::_isRoot(effectiveUrl))
 		this->_rightLocation = this->_myServer->getLocations().find("/");
  	else
@@ -296,27 +271,22 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		std::map<std::string, location_t>::const_iterator curLocation = this->_myServer->getLocations().begin();
 		for (; curLocation != this->_myServer->getLocations().end(); curLocation++)
 		{
-			if (Utils::_isRightLocation(curLocation->first, effectiveUrl))//**MELHORAR A VERIFICACAO
+			if (Utils::_isRightLocation(curLocation->first, effectiveUrl))
 			{
-				//std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
 				this->_rightLocation = curLocation;
 			}
 		}
 	} 
 
-	//VER SE TEM LOCATION PARA EXECUTAR O METODO
 	if (method != "GET" && this->_rightLocation == this->_myServer->getLocations().end())
 		throw std::runtime_error(Utils::_defaultErrorPages(403, "Nao foi encontrado location para o metodo solicitado"));
 
-	//VERIFICAR SE O LOCATION TEM REDIRECT OU NOVO ROOT
 	if (this->_rightLocation != this->_myServer->getLocations().end())
 	{
-		std::cout << "LOCATION: " << this->_rightLocation->first << " ACHADO PARA: " << effectiveUrl << std::endl;
 		const location_t &loc = this->_rightLocation->second;
 		if (!loc.redirect.empty())
 		{
 			effectiveUrl = loc.redirect;
-			std::cout << "REDIRECIONANDO DE: " << url << " PARA: " << effectiveUrl << std::endl;
 			if (this->_urlLoopCount > 3)
 				throw std::runtime_error(Utils::_defaultErrorPages(508, "Foi detectado um loop de redirecionamentos."));
 			this->_isRedirect = true;
@@ -325,7 +295,6 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		}
 		if (!loc.root.empty())
 		{
-			std::cout << "ROTEANDO DE: " << root << " PARA: " << effectiveRoot << std::endl;
 			effectiveRoot = loc.root;
 		}
 		if (!Utils::isMethodAllowed(loc.methods, method))
@@ -335,9 +304,6 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		}
 	}
 
-//-----------------------------------------------------------------------------------------
-
-	//LIMPEZA DE ROOTS E PATHS PARA CONCATENACAO
 	if (!effectiveUrl.empty() && effectiveUrl[0] == '/')
 	{
         effectiveUrl.erase(0, 1);
@@ -357,14 +323,9 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 	{
 		fullPath = effectiveRoot + effectiveUrl;
 	}
-
-
-	std::cout << "FULLPATH: " << fullPath << std::endl;
-//--------------------------------------------------------------------------------------------------- 
-	//EXECUCAO DOS METODOS
+ 
     if (method == "GET")
 	{
-        std::cout << "EFETUANDO METODO GET PARA PATH: " << fullPath << std::endl; 
 		if (Utils::isExtensionOf(".py", fullPath))
 		{
 			if (!Utils::fileExists(fullPath))
@@ -383,15 +344,12 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		}
 		if (Utils::directoryExists(fullPath))
 		{
-			std::cout << "PATH: " << fullPath << " EH UM DIR!\n";
-			//GET PARA DIRETORIO
 			if (this->_rightLocation != this->_myServer->getLocations().end() && !this->_rightLocation->second.tryFile.empty() && this->_serveTryFile((effectiveRoot + this->_rightLocation->second.tryFile), effectiveRoot, this->getConnectFd())) //guardar o location no objeto e verificar se há um location
 			{
                 return;
             }
 			else if (this->_rightLocation != this->_myServer->getLocations().end() && this->_rightLocation->second.autoindex)
 			{
-				//std::cout << "TENTANDO AUTOINDEX EM: " << this->_rightLocation->second.autoindex << std::endl;
                 this->_serveAutoindex(fullPath, effectiveRoot, this->getConnectFd());
 				return ;
             }
@@ -414,8 +372,8 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 				return ;
             throw std::runtime_error(Utils::_defaultErrorPages(404, "O diretorio ou arquivo nao foi encontrado."));
         }
-    }//------------------------------------------------------------------------------------------------------------
-	else if (method == "POST") //METODO POST
+    }
+	else if (method == "POST") 
 	{
 		if (this->_rightLocation->second.uploadTo.empty())
 			throw std::runtime_error(Utils::_defaultErrorPages(501, "Nenhum diretorio definido para upload"));
@@ -426,15 +384,13 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 			throw std::runtime_error(Utils::_defaultErrorPages(404, "O servidor nao possui permissao para abrir o diretorio."));
 		}
 		this->_effectiveUpload = effectiveRoot + this->_rightLocation->second.uploadTo;
-        //std::cout << "EFETUANDO METODO POST PARA PATH: " << fullPath << std::endl; 
         this->_fullPath = fullPath;
-		//std::cout << "REQUEST ANTES DE MANDAR PRO CGI: " << this->_myRequest.getRequest() << std::endl;
 		CGI postCgi(fullPath, _effectiveUpload, this->_myRequest.getRequest(), this->_myRequest.getBodyLength());
 		this->_exportEnviron(postCgi);
 		postCgi.execute();
 		std::string response = Utils::autoHTML("200", "OK","cgi.html");
 		write(this->_connect_fd, response.c_str(), response.length()); 
-    }//------------------------------------------------------------------------------------------------------------
+    }
 	else if (method == "DELETE")
 	{
 		if (remove(fullPath.c_str()) == 0)
@@ -446,7 +402,7 @@ void Connect::_processRequest(const std::string &url, const std::string &method,
 		{
 			throw std::runtime_error(Utils::_defaultErrorPages(400, "O arquivo nao foi encontrado no diretorio /upload."));
 		}
-	}//------------------------------------------------------------------------------------------------------------
+	}
 	else
 	{
         throw std::runtime_error(Utils::_defaultErrorPages(405, "Os metodos permitidos sao GET, POST e DELETE."));

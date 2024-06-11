@@ -12,13 +12,6 @@
 
 #pragma once
 
-//GENERAL INCLUDES
-/* #include <iostream>
-#include <string>
-#include <map>
-#include <vector> */
-
-//ESPECIFIC INCLUDES
 #include <stdio.h> 
 #include <sys/types.h> 
 #include <sys/wait.h>
@@ -28,10 +21,6 @@
 #include <cstring>
 #include <exception>
 #include <stdlib.h>
-
-//CUSTOM INCLUDES
-//#include "Connect.hpp"
-//#include "Location.hpp"
 #include "Utils.hpp"
 
 #define WRITE_END			1
@@ -51,29 +40,22 @@ class CGI
 
         std::vector<char*> _environ;
         std::vector<char*> _args;
-        //std::vector<std::string> _environ;
-        //char ** _envp;
-        //char **_args;
 
-        //char** _env;
 
         void    _setOutFile();
         void    _writeRequestToCGI();
         void    _runCGIandWriteHTML();
-        //void    _exportEnv();
         void    _exportEnvPath();
         
         void		_setArgvEnvp();
 
         void	_setPipeAndFile(int &file, int (&fd)[2]);
         void	_executeBin(int &file, int (&fd)[2]);
-        //void    _handle_timeout(pid_t pid)
 
     public:
         CGI(std::string fullPath, std::string uploadTo, std::string request, size_t requestLength);
         ~CGI();
         
-        void	_run();
         void setNewEnv(std::string key, std::string value);
         void execute();
 

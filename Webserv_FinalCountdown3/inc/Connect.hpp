@@ -12,11 +12,9 @@
 
 #pragma once
 
-//GENERAL INCLUDES
 #include <iostream>
 #include <string>
 
-//CUSTOM INCLUDES
 #include "Utils.hpp"
 #include "Server.hpp"
 #include "Request.hpp"
@@ -41,7 +39,6 @@ class Connect
 
 		bool	_isRedirect;
 
-		//UTILS
 		void	_setUpdate(time_t now);
 		void	_searchForNonDefaultServer(std::vector<Server> &servers);
 
@@ -53,9 +50,6 @@ class Connect
 		void	_serveAutoindex(std::string &fullPath, std::string &rootDir, int _connectSocket);
 		bool	_serveTryFile(const std::string &tryFilePath, const std::string &effectiveRoot, int _connectSocket);
 		bool	_tryServeErrorPage(const std::string &effectiveRoot);
-
-
-
 		
 	public:
 		Connect(Server &server, int connect_fd);

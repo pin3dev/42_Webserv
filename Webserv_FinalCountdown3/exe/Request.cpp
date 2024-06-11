@@ -31,7 +31,7 @@ Request::Request() : _readyToResponse(false), _firstRead(true)
     this->_payload.clear();
     this->_bodyLength = 0;
     this->_headerData.clear();
-    this->_maxLength = 0; //*TESTER
+    this->_maxLength = 0; 
 }
 
 Request::~Request()
@@ -47,12 +47,11 @@ void	Request::toAppend(char const *buffer, size_t size)
 {
     this->_request.append(buffer, size);
     
-    std::string partRequest = buffer;
+    std::string partRequest(buffer, size);
 
-    if (partRequest.find("\r\n"))
+    if (partRequest.find("\r\n") != std::string::npos)
         this->setReadyToResponse(true);
 }
-
 
 /** 
  * **************************
@@ -72,7 +71,6 @@ void	Request::checkStatusRequest()
 	if (this->_method == "POST")
         this->_setPayload(ss);
 }
-
 
 void Request::_setMethodAndURL(std::stringstream &ss)
 {
@@ -155,15 +153,12 @@ void    Request::_setPayload(std::stringstream &ss)
 	std::stringstream binarySs(ss.str(), std::stringstream::in | std::stringstream::binary);
 	binarySs.seekg(pos);
 
- 
-    //RESOLUCAO DE PROBLEMA DE LIXO NA MEMORIA DO PAYLOAD
     std::string tempPayload(this->getBodyLength(), '\0');
     binarySs.read(&tempPayload[0], this->getBodyLength());
 
     std::streamsize bytesRead = binarySs.gcount();
     if (bytesRead < static_cast<std::streamsize>(this->getBodyLength()))
     {
-        std::cout << "PAYLOAD INCOMPLETE\n";
         this->setReadyToResponse(false);
         this->setFirstRead(false);
         return ;
@@ -175,7 +170,6 @@ void    Request::_setPayload(std::stringstream &ss)
         this->_payload.resize(this->getBodyLength()); 
         binarySs.read(&this->_payload[0], this->getBodyLength());
     }
-    std::cout << "PAYLOAD DEPOIS DE GUARDADO: " << this->_payload << std::endl;
 }
 
 void    Request::_setBodyLength()

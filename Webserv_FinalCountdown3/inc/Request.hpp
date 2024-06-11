@@ -12,7 +12,6 @@
 
 #pragma once
 
-//GENERAL INCLUDES
 #include <exception>
 #include <algorithm>   // std::find
 #include <iostream>
@@ -20,11 +19,8 @@
 #include <vector>
 #include <map>
 
-//ESPECIFIC INCLUDES
 #include <sstream>
 #include <cstring>
-
-//CUSTOM INCLUDES
 
 class Request
 {

@@ -29,7 +29,7 @@ INCLUDE = -I inc
 
 CC = c++
 RM = rm -f
-CPPFLAGS = -Wall -Wextra -Werror -pedantic -std=c++98 -g #-fsanitize=address
+CPPFLAGS = -Wall -Wextra -Werror -pedantic -std=c++98 -g -fsanitize=address
 
 .cpp.o:
 		${CC} ${CPPFLAGS} ${INCLUDE} -c $< -o ${<:.cpp=.o}

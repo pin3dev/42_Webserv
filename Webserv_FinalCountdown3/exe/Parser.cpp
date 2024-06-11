@@ -325,8 +325,8 @@ std::vector<std::string> Parser::getStringTokens(std::string const &s, char c)
     return tokens;
 }
 
-/////////////////////////DEBBUG
-
+/* 
+DEBBUG
 void Parser::printSettings() const 
 {
     std::cout << "\nSettings content:" << std::endl;
@@ -358,4 +358,4 @@ void Parser::printLocations(std::map<std::string, location_t> locationMap) const
         std::cout << "  CGI Extension: " << loc.cgiExtension << std::endl;
         std::cout << "  Upload To: " << loc.uploadTo << std::endl;
     }
-}
+} */
