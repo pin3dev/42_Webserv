@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <!-- Idioma -->
+    <meta charset="UTF-8">
+    <!-- Responsividade -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- Defines -->
+    <link rel="canonical" href="https://www.site1/index.html" />
+    <link rel="shortcut icon" href="/favicon.ico">
+    <title>Tutorial</title>
+    <!-- Estilo -->
+    <link rel="stylesheet" href="/styles.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;700&family=Ubuntu:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Major+Mono+Display&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Foldit:wght@100..900&family=Libre+Barcode+39+Text&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-top">
+        
+        <header>
+            <h2 class="site-logo">Cliva Webserv</h2>
+            <h5 class="site-slogan">A única coisa especial aqui é sua avaliação</h5>
+            <nav>
+                <ul>
+                    <li><a href="/index.html">Início</a></li>
+                    <li><a href="/tutorial.html">Tutorial</a></li>
+                    <li><a href="/carregar.html">Carregar</a></li>
+                    <li><a href="/apagar.html">Apagar</a></li>
+                    <li><a href="/timestamp.html">Tempo</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <article class="blog-post">
+                <p>Abaixo você encontrará alguns comandos de terminal que vão te ajudar a expandir os testes para nosso webserv.</p>
+                
+                <h3>1. Funcionamento</h3>
+
+                <p>Execute o comando abaixo no terminal, e webserv deve ser capaz de funcionar com um arquivo padrao pre-definido.</p>
+                <pre><code>./webserv</code></pre>
+                
+                <p>Execute o comando abaixo no terminal, para usar o curl.</p>
+                <pre><code>curl -v http://localhost:8080</code></pre>
+                
+                <p>Execute o comando abaixo no terminal, para "multiple hostname".</p>
+                <pre><code>curl -v -H "Host:site1" http://localhost:8080</code></pre>
+
+                <p>Execute o comando abaixo no terminal, para testar metodo POST e "limit client body" (modificar no .config o client_max_body_size).</p>
+                <pre><code>curl -X POST -H "Content-Type: plain/text" --data "OI" http://localhost:8080/curl.py</code></pre>
+
+                <p>Execute o comando abaixo no terminal, para testar metodo DELETE.</p>
+                <pre><code>curl -X DELETE http://localhost:8080/upload/curlposted.txt</code></pre>
+
+                <p>Execute o comando abaixo no terminal, para testar metodo GET.</p>
+                <pre><code>curl -X GET http://localhost:8080/get.py</code></pre>
+
+                <p>Execute o comando abaixo no terminal, para testar metodo desconhecido.</p>
+                <pre><code>curl -X AFE http://localhost:8080/</code></pre>
+
+                <p>Execute o comando abaixo no navegador, para "URI too long"</p>
+                <pre><code>localhost:8080/supercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocious
+                </code></pre>
+            </article>
+        </div>
+
+        <footer>
+            <p>Copyright © 2024 Clara Franco & Ívany Pinheiro.</p>
+        </footer>
+    </div>
+</body>
+
+</html>
