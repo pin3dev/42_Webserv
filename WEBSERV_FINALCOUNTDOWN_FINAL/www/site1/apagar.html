@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <!-- Idioma -->
+    <meta charset="UTF-8">
+    <!-- Responsividade -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- Defines -->
+    <link rel="canonical" href="https://www.site1/index.html" />
+    <link rel="shortcut icon" href="/favicon.ico">
+    <title>Apagar</title>
+    <!-- Estilo -->
+    <link rel="stylesheet" href="/styles.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;700&family=Ubuntu:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Major+Mono+Display&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Foldit:wght@100..900&family=Libre+Barcode+39+Text&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-top">
+        
+        <header>
+            <h2 class="site-logo">Cliva Webserv</h2>
+            <h5 class="site-slogan">A única coisa especial aqui é sua avaliação</h5>
+            <nav>
+                <ul>
+                    <li><a href="/index.html">Início</a></li>
+                    <li><a href="/tutorial.html">Tutorial</a></li>
+                    <li><a href="/carregar.html">Carregar</a></li>
+                    <li><a href="/apagar.html">Apagar</a></li>
+                    <li><a href="/timestamp.html">Tempo</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <h3>Apague ficheiros carregados</h3>
+            <p>No espaço abaixo, escreva o nome do ficheiro, e carregue no botão, se o arquivo existir, será apagado da memória do nosso servidor físico</p>
+
+            <form id="delete-form">
+                <input type="text" name="filename" id="filename" class="input-text" placeholder="Digite o nome do arquivo aqui" required>
+                <button type="submit" class="button-link">DELETAR</button>
+            </form>
+            
+            <script>
+                document.getElementById('delete-form').addEventListener('submit', function(event) {
+                    event.preventDefault(); // Impede o comportamento padrão de envio do formulário
+
+                    const filename = document.getElementById('filename').value;
+                    const url = `/upload/${encodeURIComponent(filename)}`; // Codifica o nome do arquivo para segurança URL
+
+                    fetch(url, {
+                        method: 'DELETE',
+                    })
+                });
+            </script>
+            
+        </div>
+
+        <footer>
+            <p>Copyright © 2024 Clara Franco & Ívany Pinheiro.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

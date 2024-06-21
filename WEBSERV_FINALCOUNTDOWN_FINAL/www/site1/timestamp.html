@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <!-- Idioma -->
+    <meta charset="UTF-8">
+    <!-- Responsividade -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- Defines -->
+    <link rel="canonical" href="https://www.site1/index.html" />
+    <link rel="shortcut icon" href="/favicon.ico">
+    <title>Timestamp</title>
+    <!-- Estilo -->
+    <link rel="stylesheet" href="/styles.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;700&family=Ubuntu:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Major+Mono+Display&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Foldit:wght@100..900&family=Libre+Barcode+39+Text&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-top">
+        <header>
+        </header>
+        <div class="main-content">
+                <script>
+                    window.onload = function() {
+                        const url = `/get.py`; // Define a URL para o script Python
+                
+                        fetch(url, {
+                            method: 'GET' // Configura o método HTTP como GET
+                        })
+                        .then(response => response.text())  // Processa a resposta como texto
+                        .then(text => {
+                            document.body.innerHTML = text;  // Insere o texto no corpo do documento HTML
+                        })
+                        .catch(error => {
+                            // Tratar apenas erros de conexão ou de rede
+                            console.error('Erro ao enviar request:', error);
+                        });
+                    };
+                </script>                
+        </div>
+
+        <footer>
+            <p>Copyright © 2024 Clara Franco & Ívany Pinheiro.</p>
+        </footer>
+    </div>
+</body>
+
+</html>
