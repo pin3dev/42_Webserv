@@ -60,7 +60,7 @@
                 <pre><code>curl -X POST -H "Content-Type: text/plain" --data "OI" http://localhost:8080/curl.py</code></pre>
 
                 <p>Execute o comando abaixo no terminal, para testar metodo DELETE.</p>
-                <pre><code>curl -X DELETE http://localhost:8080/upload/curlposted.txt</code></pre>
+                <pre><code>curl -X DELETE http://localhost:8080/upload/curl</code></pre>
 
                 <p>Execute o comando abaixo no terminal, para testar metodo GET.</p>
                 <pre><code>curl -X GET http://localhost:8080/get.py</code></pre>
@@ -72,24 +72,23 @@
                 <pre><code>curl --trace - --header "Transfer-Encoding: chunked" --header "Content-Type: image/jpeg" --data-binary @/home/ivbatist/Downloads/wallpaper.jpg http://localhost:8080/curl.py</code></pre>
 
                 <p>Execute o comando abaixo no terminal, para testar metodo POST com chunked para texto</p>  
-                <pre><code>curl --trace - --header "Transfer-Encoding: chunked" --header "Content-Type: plain/text" --data "OICARALHO" http://localhost:8080/curl.py</code></pre>
+                <pre><code>curl --trace - --header "Transfer-Encoding: chunked" --header "Content-Type: text/plain" --data "OICARALHO" http://localhost:8080/curl.py</code></pre>
 
                 <p>Execute o comando abaixo no terminal, para testar metodo POST com chunked para video</p>  
                 <pre><code>curl --trace - --header "Transfer-Encoding: chunked" --header "Content-Type: video/mp4" --data-binary @/home/ivbatist/Downloads/videoTester.mp4 http://localhost:8080/curl.py</code></pre>
 
-                <p>Execute o comando abaixo no terminal, para testar metodo POST para arquivos pequenos</p>
-                <pre><code>curl -F "fileUpload=@/home/ivbatist/Downloads/wallpaper.jpg" http://localhost:8080/curl.py</code></pre>
-
-                <p>Execute o comando abaixo no terminal, para testar metodo POST para arquivos grandes</p>
-                <pre><code>curl -F "fileUpload=@/home/ivbatist/Downloads/wallpaper.jpg" http://localhost:8080/curl.py</code></pre>
-
                 <p>Execute o comando abaixo no terminal, para testar metodo POST para o CGI em loop infinito</p>
                 <pre><code>curl -X POST -H "Content-Type: text/plain" --data "OI" http://localhost:8080/error.py</code></pre>
 
-                <!--
-                <p>Execute o comando abaixo no navegador, para "URI too long"</p>
-                <pre><code>localhost:8080/supercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocioussupercalifragilisticexpialidocious
-                </code></pre> -->
+                <p>Execute o comando abaixo no terminal, para estressar o servidor, e ficarmos todos estressados juntos :D</p>
+                <pre><code>siege -b -t30S -c10 http://localhost:8080/empty.html</code></pre>
+
+                <p>Em outro terminal verificar o PID do servidor</p>
+                <pre><code>ps aux | grep ./webserv</code></pre>
+                
+                <p>Monitorar uso da memoria</p>
+                <pre><code>top -p PID</code></pre>
+                
             </article>
         </div>
 

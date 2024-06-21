@@ -18,7 +18,7 @@ INCLUDE = -I inc
 
 CC = c++
 RM = rm -f
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
 %.o: %.cpp
 		${CC} ${CPPFLAGS} ${INCLUDE} -c $< -o $@
