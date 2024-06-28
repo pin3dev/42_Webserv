@@ -141,7 +141,6 @@ void Manager::_storeRequest()
 		{
 			this->REFconnect->getRequest().setHasHeaders(buffer, bytes);
 			this->REFconnect->searchForNonDefaultServer(*this->HEADserver);
-			/*COLOCAR AQUI UM VERIFICADOR DE TAMANHO DE PAYLOAD E QUE FINALIZA A CONEXAO*/
 		}
 		else if(this->REFconnect->getRequest().isChunked())
 		{
