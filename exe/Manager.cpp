@@ -7,7 +7,6 @@
  * SECTION - CONSTRUCTORS
  * **************************
 */
-
 Manager:: Manager(pollfd &pollfd) : REFpollfd(pollfd), REFserver(NULL) , REFconnect(NULL), 
 HEADpollfd(NULL), HEADserver(NULL), HEADconnect(NULL)
 {
