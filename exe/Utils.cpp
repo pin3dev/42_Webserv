@@ -310,56 +310,30 @@ std::string Utils::autoHTML(std::string const &status, std::string const &status
 	return (response + fileContent);
 }
 
-bool Utils::findChunkedEOF(const std::vector<char>& payload)
+bool findChunkedEOF(const std::vector<char>& payload)
 {
-	size_t pos = 0;
-	
-	while(pos < payload.size())
+    for (size_t pos = 0; pos + 4 < payload.size(); ++pos)
+    {
+        if (payload[pos] == '0' && payload[pos + 1] == '\r' &&
+            payload[pos + 2] == '\n' && payload[pos + 3] == '\r' &&
+            payload[pos + 4] == '\n')
 	{
-		if (pos + 4 < payload.size() && payload[pos] == '0' &&
-		payload[pos + 1] == '\r' &&
-		payload[pos + 2] == '\n' &&
-		payload[pos + 3] == '\r' &&
-		payload[pos + 4] == '\n')
-		{
-			return(true);
-		}
-		pos++;
-	}
-	return (false);
+            return true;
+        }
+    }
+    return false;
 }
 
-size_t	Utils::countCurChunkedSize(const std::vector<char>& payload, size_t pos)
+size_t countChunkSize(const std::vector<char>& payload, size_t& pos)
 {
-	size_t i = 0;
-
-	while (pos < payload.size())
-	{
-		if (payload[pos] == '\r' && payload[pos + 1] == '\n')
-			break;
-		pos++;
-		i++;
-	}
-	return (i);
-}
-
-size_t	Utils::countFullChunkedSize(const std::vector<char>& payload, size_t pos)
-{
-	std::string size = "";
-
-	while (pos < payload.size())
-	{
-		if (payload[pos] == '\r' && payload[pos + 1] == '\n')
-			break;
-		size += payload[pos];
-		pos++;
-	}
-
-	std::stringstream ss(size);
-	size_t value;
-	ss >> std::hex >> value;
-
-	return (value);
+    std::string sizeStr;
+    while (pos < payload.size() && payload[pos] != '\r')
+    {
+        sizeStr += payload[pos];
+        ++pos;
+    }
+    pos += 2;
+    return std::strtoul(sizeStr.c_str(), nullptr, 16);
 }
 
 
