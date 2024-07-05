@@ -48,6 +48,5 @@ class Utils
         static bool	_isRightLocation(std::string locName, std::string &url);
         static bool isReadeableFile(std::string const &fullpath);
         static bool findChunkedEOF(const std::vector<char>& payload);
-        static size_t countCurChunkedSize(const std::vector<char>& payload, size_t pos);
-        static size_t countFullChunkedSize(const std::vector<char>& payload, size_t pos);
+        static size_t countChunkSize(const std::vector<char>& payload, size_t& pos);
 };
