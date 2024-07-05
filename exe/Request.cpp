@@ -111,28 +111,24 @@ void Request::setPayload(char *buffer, size_t size)
 
 void    Request::handleChunked()
 {
-    //std::cout << "LENDO O CHUNKED!" <<std::endl;
     if (!Utils::findChunkedEOF(this->_payload))
         return;
-
-    //std::cout << "CHEGOU AO FIM DO CHUNKED!" <<std::endl;
 
     std::vector<char> curChunked = this->_payload;
     this->_payload.clear();
 
-	size_t chunkCharSize = Utils::countCurChunkedSize(curChunked, 0);
-	size_t chunkSize = Utils::countFullChunkedSize(curChunked, 0);
-	size_t pos = chunkCharSize + 2;
-	while (chunkSize > 0 && pos < curChunked.size())
-	{
-		for (size_t i = 0; i < chunkSize; i++)
-			this->_payload.push_back(curChunked[pos + i]);
-		pos += chunkSize + 2;
-		chunkCharSize = Utils::countCurChunkedSize(curChunked, pos);
-		chunkSize = Utils::countFullChunkedSize(curChunked, pos);
-		pos += chunkCharSize + 2;
-	}
+    size_t pos = 0;
+    size_t chunkSize = Utils::countChunkSize(curChunked, pos);
 
+    while (chunkSize > 0 && pos < curChunked.size())
+    {
+        for (size_t i = 0; i < chunkSize && pos < curChunked.size(); ++i)
+	{
+            this->_payload.push_back(curChunked[pos++]);
+        }
+        pos += 2;
+        chunkSize = Utils::countChunkSize(curChunked, pos);
+    }
     //std::cout << "CHEGOU AO FIM DO CHUNKED DE TAMANHO: " << this->_payload.size() << std::endl;
 
 /*     std::cout << "PAYLOAD CHUNKED: ";
