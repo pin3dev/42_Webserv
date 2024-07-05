@@ -310,25 +310,26 @@ std::string Utils::autoHTML(std::string const &status, std::string const &status
 	return (response + fileContent);
 }
 
-bool findChunkedEOF(const std::vector<char>& payload)
+bool Utils::findChunkedEOF(const std::vector<char>& payload)
 {
     for (size_t pos = 0; pos + 4 < payload.size(); ++pos)
-    {
+	{
         if (payload[pos] == '0' && payload[pos + 1] == '\r' &&
             payload[pos + 2] == '\n' && payload[pos + 3] == '\r' &&
             payload[pos + 4] == '\n')
-	{
-            return true;
-        }
+		{
+			return true;
+		}
     }
     return false;
 }
 
-size_t countChunkSize(const std::vector<char>& payload, size_t& pos)
+// Conta o tamanho do chunk e retorna o tamanho e a nova posição
+size_t Utils::countChunkSize(const std::vector<char>& payload, size_t& pos)
 {
     std::string sizeStr;
     while (pos < payload.size() && payload[pos] != '\r')
-    {
+	{
         sizeStr += payload[pos];
         ++pos;
     }

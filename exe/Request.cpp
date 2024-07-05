@@ -122,8 +122,7 @@ void    Request::handleChunked()
 
     while (chunkSize > 0 && pos < curChunked.size())
     {
-        for (size_t i = 0; i < chunkSize && pos < curChunked.size(); ++i)
-	{
+        for (size_t i = 0; i < chunkSize && pos < curChunked.size(); ++i) {
             this->_payload.push_back(curChunked[pos++]);
         }
         pos += 2;

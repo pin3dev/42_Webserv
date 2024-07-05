@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h> 
+#include <csignal> // Para C++
 #include <iostream>
 #include <cstring>
 #include <exception>
