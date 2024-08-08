@@ -1,7 +1,7 @@
 # Webserv `110/125`
 
 <p align="center">
-  <img src="" width="600" height="375" />
+  <img src="https://github.com/pin3dev/42_Cursus/blob/192db266f898636eefa274ed3be4aa8cc11b1397/assets/Webserv/Rdm/webserv_demo.gif" width="600" height="375" />
 </p>
 
 ## Table of Contents  
