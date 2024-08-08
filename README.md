@@ -30,7 +30,7 @@ such as parsing HTTP requests, managing server configurations, handling connecti
 To compile the project, clone the repository and use the provided Makefile.  
 
 ```bash
-git clone https://github.com/pin3dev/42_Webserv.git  
+git clone https://github.com/pin3dev/42_Webserv.git   
 cd 42_Webserv  
 make
 ```
