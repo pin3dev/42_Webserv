@@ -334,7 +334,7 @@ size_t Utils::countChunkSize(const std::vector<char>& payload, size_t& pos)
         ++pos;
     }
     pos += 2;
-    return std::strtoul(sizeStr.c_str(), nullptr, 16);
+    return std::strtoul(sizeStr.c_str(), NULL, 16);
 }
 
 
