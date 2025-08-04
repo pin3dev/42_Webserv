@@ -315,8 +315,3 @@ All supporting material and theory used for this project are documented and avai
 * Clara Franco aka [`@clima-fr`](https://github.com/clima-fr)
 
 Feel free to open issues or contribute improvements via pull requests!
-
-## 📜 License
-
-This project is open-source and licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
