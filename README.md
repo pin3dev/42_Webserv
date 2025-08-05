@@ -160,6 +160,7 @@ This project is open-source and available under the MIT License.
     <a href="#usage">Usage</a> • 
     <a href="#norms">Norms</a> • 
     <a href="#theoretical">Theoretical</a>   
+	<a href="#contributors">Contributors</a>
   </p>
 </h3>
 
@@ -230,7 +231,6 @@ This will generate the executable `webserv`, which can then be launched with a c
 The configuration file allows you to set up the server and define its behavior. Below is an example of a basic configuration:
 
 ```bash
-
 server {
 	server_name www.site1;
 	listen 8080;
@@ -288,7 +288,7 @@ server {
 A tutorial page is available at:
 
 ```bash
-http://localhost/tutorial.html
+http://localhost:<port>/tutorial.html
 ```
 
 This page provides step-by-step instructions for testing routes using `curl`, HTTP clients, or your browser. It includes examples for different methods like GET, POST, and DELETE.
@@ -309,9 +309,14 @@ All supporting material and theory used for this project are documented and avai
   </a>
 </p>
 
-## 👥 Contributors
+## 👥 Contributors <a id="contributors"></a>
 
-* Ívany Pinheiro aka [`@pin3dev`](https://github.com/pin3dev)
-* Clara Franco aka [`@clima-fr`](https://github.com/clima-fr)
+<a href="https://github.com/pin3dev">
+  <img src="https://img.shields.io/badge/Ivany_Pinheiro-%40pin3dev-purple?style=for-the-badge"/>  
+</a>  
+<br>
+<a href="https://github.com/clima-fr">
+  <img src="https://img.shields.io/badge/Clara_Franco-%40clima--fr-purple?style=for-the-badge"/>  
+</a>
 
 Feel free to open issues or contribute improvements via pull requests!
