@@ -1,0 +1,159 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: webserv-hexagonal                          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/08/05 00:00:00 by dev               #+#    #+#              #
+#    Updated: 2024/08/05 00:00:00 by dev              ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+# Compiler and flags
+CXX = c++
+CXXFLAGS = -Wall -Wextra -Werror -std=c++17 -g
+INCLUDES = -I.
+
+# Project name
+NAME = webserv
+
+# Source directories
+SRC_DIR = src
+DOMAIN_DIR = $(SRC_DIR)/domain
+APPLICATION_DIR = $(SRC_DIR)/application
+INFRASTRUCTURE_DIR = $(SRC_DIR)/infrastructure
+
+# Object directory
+OBJ_DIR = obj
+
+# Domain layer sources
+DOMAIN_ENTITIES_SRCS = \
+	$(DOMAIN_DIR)/entities/HttpRequest.cpp \
+	$(DOMAIN_DIR)/entities/HttpResponse.cpp \
+	$(DOMAIN_DIR)/entities/ServerConfig.cpp
+
+# Application layer sources
+APPLICATION_USECASES_SRCS = \
+	$(APPLICATION_DIR)/usecases/ProcessHttpRequestUseCase.cpp
+
+APPLICATION_SERVICES_SRCS = \
+	$(APPLICATION_DIR)/services/WebServerService.cpp
+
+# Infrastructure layer sources
+INFRASTRUCTURE_ADAPTERS_SRCS = \
+	$(INFRASTRUCTURE_DIR)/adapters/FileConfigurationLoader.cpp \
+	$(INFRASTRUCTURE_DIR)/adapters/BSDSocketNetworkAdapter.cpp \
+	$(INFRASTRUCTURE_DIR)/adapters/StandardFileSystemAdapter.cpp \
+	$(INFRASTRUCTURE_DIR)/adapters/HttpRequestParser.cpp
+
+# Main source
+MAIN_SRC = $(SRC_DIR)/main.cpp
+
+# All sources
+SRCS = $(DOMAIN_ENTITIES_SRCS) \
+       $(APPLICATION_USECASES_SRCS) \
+       $(APPLICATION_SERVICES_SRCS) \
+       $(INFRASTRUCTURE_ADAPTERS_SRCS) \
+       $(MAIN_SRC)
+
+# Object files
+OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+
+# Dependency files
+DEPS = $(OBJS:.o=.d)
+
+# Colors for output
+GREEN = \033[0;32m
+YELLOW = \033[1;33m
+RED = \033[0;31m
+RESET = \033[0m
+
+# Default target
+all: $(NAME)
+
+# Create the executable
+$(NAME): $(OBJS)
+	@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
+	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+	@echo "$(GREEN)✓ $(NAME) created successfully!$(RESET)"
+
+# Compile source files to object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
+
+# Include dependency files
+-include $(DEPS)
+
+# Clean object files and dependencies
+clean:
+	@echo "$(YELLOW)Cleaning object files...$(RESET)"
+	@rm -rf $(OBJ_DIR)
+	@echo "$(GREEN)✓ Object files cleaned!$(RESET)"
+
+# Clean everything
+fclean: clean
+	@echo "$(YELLOW)Cleaning executable...$(RESET)"
+	@rm -f $(NAME)
+	@echo "$(GREEN)✓ Everything cleaned!$(RESET)"
+
+# Rebuild everything
+re: fclean all
+
+# Run with default config
+run: $(NAME)
+	@echo "$(YELLOW)Running $(NAME) with default config...$(RESET)"
+	@./$(NAME) configs/default.conf
+
+# Run with specific config
+run-config: $(NAME)
+	@echo "$(YELLOW)Running $(NAME) with custom config...$(RESET)"
+	@read -p "Enter config file path: " config && ./$(NAME) $$config
+
+# Debug build
+debug: CXXFLAGS += -DDEBUG -O0
+debug: $(NAME)
+
+# Release build
+release: CXXFLAGS += -O3 -DNDEBUG
+release: $(NAME)
+
+# Show project structure
+structure:
+	@echo "$(GREEN)Project Structure (Hexagonal Architecture):$(RESET)"
+	@echo "$(YELLOW)Domain Layer (Business Logic):$(RESET)"
+	@echo "  └── entities/     - Core business entities"
+	@echo "  └── ports/        - Interface definitions"
+	@echo ""
+	@echo "$(YELLOW)Application Layer (Use Cases):$(RESET)"
+	@echo "  └── usecases/     - Business use cases"
+	@echo "  └── services/     - Application services"
+	@echo ""
+	@echo "$(YELLOW)Infrastructure Layer (Adapters):$(RESET)"
+	@echo "  └── adapters/     - External system adapters"
+	@echo "  └── config/       - Configuration implementations"
+	@echo "  └── network/      - Network implementations"
+
+# Help
+help:
+	@echo "$(GREEN)Available targets:$(RESET)"
+	@echo "  $(YELLOW)all$(RESET)         - Build the project"
+	@echo "  $(YELLOW)clean$(RESET)       - Remove object files"
+	@echo "  $(YELLOW)fclean$(RESET)      - Remove all generated files"
+	@echo "  $(YELLOW)re$(RESET)          - Rebuild everything"
+	@echo "  $(YELLOW)run$(RESET)         - Run with default config"
+	@echo "  $(YELLOW)run-config$(RESET)  - Run with custom config"
+	@echo "  $(YELLOW)debug$(RESET)       - Build debug version"
+	@echo "  $(YELLOW)release$(RESET)     - Build optimized version"
+	@echo "  $(YELLOW)structure$(RESET)   - Show project structure"
+	@echo "  $(YELLOW)help$(RESET)        - Show this help"
+
+# Check for compilation errors without building
+check:
+	@echo "$(YELLOW)Checking syntax...$(RESET)"
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -fsyntax-only $(SRCS)
+	@echo "$(GREEN)✓ Syntax check passed!$(RESET)"
+
+.PHONY: all clean fclean re run run-config debug release structure help check
